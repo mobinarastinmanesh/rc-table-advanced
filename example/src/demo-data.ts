@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { TableFieldValue } from 'rc-table-advanced';
 
 export type DemoLocale = 'en' | 'fa';
@@ -65,7 +66,7 @@ export const getReceiverDisplayName = (
 export const getReceiverErrorMessage = (
   record: DemoRecord,
   locale: DemoLocale,
-): string | undefined => {
+): ReactNode | undefined => {
   if (record.name.isValid !== false) return undefined;
   return locale === 'fa' ? 'نام گیرنده ناقص است' : record.name.message;
 };
@@ -78,26 +79,29 @@ const buildTags = (id: number): string[] => {
   return tags;
 };
 
-export const demoRecords: DemoRecord[] = Array.from({ length: 42 }, (_, index) => {
-  const id = index + 1;
-  const isInvalid = id % 9 === 2;
-  const receiver = demoReceivers[index % demoReceivers.length];
+export const demoRecords: DemoRecord[] = Array.from(
+  { length: 42 },
+  (_, index) => {
+    const id = index + 1;
+    const isInvalid = id % 9 === 2;
+    const receiver = demoReceivers[index % demoReceivers.length];
 
-  return {
-    id,
-    receiverSlug: receiver.slug,
-    name: {
-      value: isInvalid ? `Invalid receiver ${id}` : receiver.en,
-      isValid: !isInvalid,
-      message: isInvalid ? 'Receiver name is incomplete' : undefined,
-    },
-    status: id % 3 === 0 ? 'draft' : 'paid',
-    priority: id % 3 === 0 ? 'high' : id % 2 === 0 ? 'normal' : 'low',
-    tags: buildTags(id),
-    amount: 25 + id * 13,
-    createdAt: `2025/${String((id % 12) + 1).padStart(2, '0')}/${String((id % 28) + 1).padStart(2, '0')}`,
-  };
-});
+    return {
+      id,
+      receiverSlug: receiver.slug,
+      name: {
+        value: isInvalid ? `Invalid receiver ${id}` : receiver.en,
+        isValid: !isInvalid,
+        message: isInvalid ? 'Receiver name is incomplete' : undefined,
+      },
+      status: id % 3 === 0 ? 'draft' : 'paid',
+      priority: id % 3 === 0 ? 'high' : id % 2 === 0 ? 'normal' : 'low',
+      tags: buildTags(id),
+      amount: 25 + id * 13,
+      createdAt: `2025/${String((id % 12) + 1).padStart(2, '0')}/${String((id % 28) + 1).padStart(2, '0')}`,
+    };
+  },
+);
 
 export const filterDemoRecords = (
   data: DemoRecord[],
