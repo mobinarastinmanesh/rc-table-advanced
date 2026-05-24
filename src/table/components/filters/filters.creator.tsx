@@ -12,6 +12,12 @@ import {
   type InlineFilterSchema,
 } from './filters.types';
 
+const isDateObject = (value: unknown): value is DateObject =>
+  value != null &&
+  typeof value === 'object' &&
+  !Array.isArray(value) &&
+  typeof (value as DateObject).format === 'function';
+
 type FilterCreatorProps<T> = Omit<InlineFilterSchema<T>, 'key'> & {
   fieldKey: string;
   defaultValue?: FilterValue;
@@ -112,10 +118,12 @@ const FilterCreator = <T,>({
               onChange?.(fieldKey as keyof T, undefined);
               return;
             }
-            const date: DateObject | undefined = Array.isArray(selected)
-              ? selected[0]
-              : selected;
-            onChange?.(fieldKey as keyof T, date ? date.format(DATE_FORMAT) : undefined);
+            const item = Array.isArray(selected) ? selected[0] : selected;
+            if (!isDateObject(item)) {
+              onChange?.(fieldKey as keyof T, undefined);
+              return;
+            }
+            onChange?.(fieldKey as keyof T, item.format(DATE_FORMAT));
           }}
         />
       </label>
