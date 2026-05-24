@@ -1,0 +1,92 @@
+{
+  "name": "rc-table-advanced",
+  "version": "0.2.0",
+  "description": "Typed React advanced table on rc-table — filters, pagination, error cells, drawer & modal filters. Live demo included.",
+  "type": "module",
+  "license": "MIT",
+  "author": "mobinarastinmanesh (https://github.com/mobinarastinmanesh)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mobinarastinmanesh/rc-table-advanced.git"
+  },
+  "homepage": "https://mobinarastinmanesh.github.io/rc-table-advanced/",
+  "bugs": {
+    "url": "https://github.com/mobinarastinmanesh/rc-table-advanced/issues"
+  },
+  "sideEffects": [
+    "./dist/rc-table-advanced.es.js",
+    "./dist/rc-table-advanced.cjs.js"
+  ],
+  "main": "./dist/rc-table-advanced.cjs.js",
+  "module": "./dist/rc-table-advanced.es.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/rc-table-advanced.es.js",
+      "require": "./dist/rc-table-advanced.cjs.js"
+    }
+  },
+  "files": [
+    "dist/rc-table-advanced.cjs.js",
+    "dist/rc-table-advanced.es.js",
+    "dist/rc-table-advanced.css",
+    "dist/types",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "react",
+    "react-table",
+    "table",
+    "rc-table",
+    "data-grid",
+    "data-table",
+    "typescript",
+    "filters",
+    "pagination",
+    "advanced-table",
+    "drawer-filter",
+    "modal-filter",
+    "table-component",
+    "react-component",
+    "error-cell",
+    "date-picker-filter"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "scripts": {
+    "dev": "npm run dev --prefix example",
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run test",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "lint:fix": "prettier . --write",
+    "format": "prettier . --write"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "rc-table": "7.55.1",
+    "react-date-object": "^2.1.9",
+    "react-multi-date-picker": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "24.12.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "prettier": "3.8.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "typescript": "~5.9.3",
+    "vite": "4.5.14"
+  }
+}
