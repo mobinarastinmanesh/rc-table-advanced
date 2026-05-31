@@ -59,8 +59,8 @@ export const filterModalSchema: FilterSchema[] = [
     calendarSystems: ['jalali', 'gregorian', 'hijri'] as DateCalendarSystem[],
   },
   {
-    key: 'createdAt',
-    label: 'Date (Jalali / Gregorian / Hijri)',
+    key: 'updatedAt',
+    label: 'Date (Jalali)',
     type: FilterType.DATE_PICKER,
     calendarSystems: ['jalali'] as DateCalendarSystem[],
   },

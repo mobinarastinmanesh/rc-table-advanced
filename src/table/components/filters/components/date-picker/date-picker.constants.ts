@@ -58,12 +58,14 @@ export const getCalendarSystemConfig = (
   system: DateCalendarSystem,
   dir: TableDirection = 'ltr',
 ) => {
-  const config = calendarSystemConfigs[system];
+  const key: DateCalendarSystem =
+    system === 'gregorian' || system === 'hijri' ? system : 'jalali';
+  const config = calendarSystemConfigs[key];
   if (dir !== 'rtl') return config;
 
   return {
     ...config,
-    locale: rtlLocales[system],
+    locale: rtlLocales[key],
     weekDays: rtlWeekDays,
   };
 };

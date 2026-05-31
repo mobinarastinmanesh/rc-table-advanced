@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import type { DatePickerRef } from 'react-multi-date-picker';
 import './date-picker.css';
-import { DATE_FORMAT, calendarSystemConfigs } from './date-picker.constants';
+import { DATE_FORMAT, getCalendarSystemConfig } from './date-picker.constants';
 import { MultiDatePicker } from './multi-date-picker';
 import { useTableDirection } from '../../../../table.direction';
 import type { DatePickerProps } from './date-picker.types';
@@ -22,7 +22,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
     const internalRef = useRef<DatePickerRef>(null);
     const dir = useTableDirection();
     const isRtl = dir === 'rtl';
-    const calendarConfig = calendarSystemConfigs[calendarSystem];
+    const calendarConfig = getCalendarSystemConfig(calendarSystem, dir);
     const resolvedPosition =
       calendarPosition ?? (isRtl ? 'bottom-end' : 'bottom-start');
 
@@ -46,6 +46,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
 
     return (
       <MultiDatePicker
+        {...props}
         ref={internalRef}
         arrow={false}
         calendar={calendarConfig.calendar}
@@ -68,7 +69,6 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         )}
         weekDays={[...calendarConfig.weekDays]}
         weekStartDayIndex={calendarConfig.weekStartDayIndex}
-        {...props}
       />
     );
   },
