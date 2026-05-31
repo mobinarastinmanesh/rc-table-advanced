@@ -1,0 +1,148 @@
+.demo-page {
+  margin: 0 auto;
+  max-width: 72rem;
+  padding: 1.5rem;
+}
+
+.demo-header {
+  margin-bottom: 2rem;
+}
+
+.demo-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+}
+
+.demo-header p {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin: 0;
+  max-width: 42rem;
+}
+
+.demo-section {
+  margin-bottom: 3rem;
+}
+
+.demo-section__header {
+  margin-bottom: 0.75rem;
+}
+
+.demo-section__header h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.demo-section__header p {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.demo-section[dir='rtl'] .demo-section__header {
+  text-align: right;
+}
+
+/* ——— Custom classNames sample (indigo / violet theme) ——— */
+
+.custom-filter__bar {
+  background: linear-gradient(90deg, #eef2ff, #f5f3ff) !important;
+  border-color: #a5b4fc !important;
+  border-radius: 0.75rem !important;
+}
+
+.custom-filter__search:focus {
+  border-color: #4f46e5 !important;
+  box-shadow: 0 0 0 3px rgb(79 70 229 / 18%) !important;
+}
+
+.custom-table .rc-table {
+  border: 2px solid #a5b4fc !important;
+  border-radius: 0.75rem !important;
+}
+
+.custom-table .rc-table-thead .rc-table-cell {
+  background: #e0e7ff !important;
+  color: #312e81 !important;
+}
+
+.custom-table .rc-table-tbody .rc-table-row:hover .rc-table-cell {
+  background: #eef2ff !important;
+}
+
+.rcta-table--rtl.custom-table .rc-table-thead .rc-table-cell,
+.rcta-table--rtl.custom-table .rc-table-tbody .rc-table-cell {
+  text-align: right !important;
+}
+
+.rcta-table--rtl.custom-table .rcta-table-cell {
+  justify-content: flex-start;
+  text-align: right;
+  width: 100%;
+}
+
+.rcta-table--rtl.custom-table .rcta-error-cell {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.custom-pagination .rcta-button--primary,
+.custom-modal .rcta-button--primary,
+.custom-drawer .rcta-button--primary {
+  background: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+}
+
+.custom-pagination .rcta-button--primary:hover,
+.custom-modal .rcta-button--primary:hover,
+.custom-drawer .rcta-button--primary:hover {
+  background: #4338ca !important;
+  border-color: #4338ca !important;
+}
+
+.rcta-modal.custom-modal-overlay,
+.custom-modal-overlay.rcta-modal {
+  background: rgb(49 46 129 / 35%) !important;
+}
+
+.rcta-modal__panel.custom-modal,
+.custom-modal.rcta-modal__panel {
+  border: 2px solid #a5b4fc !important;
+  border-radius: 1rem !important;
+}
+
+.rcta-drawer--right .rcta-drawer__panel.custom-drawer,
+.rcta-drawer--right .custom-drawer.rcta-drawer__panel {
+  border-left: 4px solid #6366f1 !important;
+  border-right: none !important;
+}
+
+.rcta-drawer--left .rcta-drawer__panel.custom-drawer,
+.rcta-drawer--left .custom-drawer.rcta-drawer__panel {
+  border-left: none !important;
+  border-right: 4px solid #6366f1 !important;
+}
+
+.custom-filter__chips .rcta-chip {
+  background: #ede9fe !important;
+  border-color: #c4b5fd !important;
+  color: #5b21b6 !important;
+}
+
+.custom-filter__chips .rcta-chip--selected {
+  background: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+  color: #fff !important;
+}
+
+.custom-table-root .rcta-accordion__trigger:hover {
+  background: #eef2ff !important;
+}
+
+.custom-table-root .rcta-accordion__count {
+  color: #4f46e5 !important;
+}
