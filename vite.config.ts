@@ -12,7 +12,13 @@ export default defineConfig({
     },
 
     rollupOptions: {
-      external: ['react', 'react-dom', 'rc-table', 'react/jsx-runtime'],
+      external: [
+        'react',
+        'react-dom',
+        'rc-table',
+        'react/jsx-runtime',
+        'react-multi-date-picker',
+      ],
       output: {
         globals: {
           react: 'React',
