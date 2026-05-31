@@ -19,10 +19,10 @@
   ],
   "main": "./dist/rc-table-advanced.cjs.js",
   "module": "./dist/rc-table-advanced.es.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "./types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
+      "types": "./types/index.d.ts",
       "import": "./dist/rc-table-advanced.es.js",
       "require": "./dist/rc-table-advanced.cjs.js"
     }
@@ -31,7 +31,7 @@
     "dist/rc-table-advanced.cjs.js",
     "dist/rc-table-advanced.es.js",
     "dist/rc-table-advanced.css",
-    "dist/types",
+    "types",
     "README.md",
     "LICENSE"
   ],
