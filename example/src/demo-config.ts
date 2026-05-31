@@ -1,4 +1,9 @@
-import { FilterType, type DrawerFilterGroup, type FilterSchema } from 'rc-table-advanced';
+import {
+  FilterType,
+  type DateCalendarSystem,
+  type DrawerFilterGroup,
+  type FilterSchema,
+} from 'rc-table-advanced';
 
 export const filterModalSchema: FilterSchema[] = [
   {
@@ -49,15 +54,21 @@ export const filterModalSchema: FilterSchema[] = [
   },
   {
     key: 'createdAt',
-    label: 'Date (Jalali / Miladi / Qamari)',
+    label: 'Date (Jalali / Gregorian / Hijri)',
     type: FilterType.DATE_PICKER,
-    calendarSystems: ['jalali', 'miladi', 'ghamari'],
+    calendarSystems: ['jalali', 'gregorian', 'hijri'] as DateCalendarSystem[],
+  },
+  {
+    key: 'createdAt',
+    label: 'Date (Jalali / Gregorian / Hijri)',
+    type: FilterType.DATE_PICKER,
+    calendarSystems: ['jalali'] as DateCalendarSystem[],
   },
   {
     key: 'createdRange',
     label: 'Date range (multi-calendar)',
     type: FilterType.DATE_RANGE_PICKER,
-    calendarSystems: ['jalali', 'miladi', 'ghamari'],
+    calendarSystems: ['jalali', 'gregorian', 'hijri'] as DateCalendarSystem[],
   },
 ];
 
@@ -105,13 +116,21 @@ export const drawerFilterGroups: DrawerFilterGroup[] = [
         key: 'createdAt',
         label: 'Single date',
         type: FilterType.DATE_PICKER,
-        calendarSystems: ['jalali', 'miladi', 'ghamari'],
+        calendarSystems: [
+          'jalali',
+          'gregorian',
+          'hijri',
+        ] as DateCalendarSystem[],
       },
       {
         key: 'createdRange',
         label: 'Date range',
         type: FilterType.DATE_RANGE_PICKER,
-        calendarSystems: ['jalali', 'miladi', 'ghamari'],
+        calendarSystems: [
+          'jalali',
+          'gregorian',
+          'hijri',
+        ] as DateCalendarSystem[],
       },
     ],
   },
@@ -191,13 +210,13 @@ export const persianFilterModalSchema: FilterSchema[] = [
     key: 'createdAt',
     label: 'تاریخ (شمسی / میلادی / قمری)',
     type: FilterType.DATE_PICKER,
-    calendarSystems: ['jalali', 'miladi', 'ghamari'],
+    calendarSystems: ['jalali', 'gregorian', 'hijri'] as DateCalendarSystem[],
   },
   {
     key: 'createdRange',
     label: 'بازه تاریخ (چند تقویم)',
     type: FilterType.DATE_RANGE_PICKER,
-    calendarSystems: ['jalali', 'miladi', 'ghamari'],
+    calendarSystems: ['jalali', 'gregorian', 'hijri'] as DateCalendarSystem[],
   },
 ];
 
@@ -245,13 +264,21 @@ export const persianDrawerFilterGroups: DrawerFilterGroup[] = [
         key: 'createdAt',
         label: 'تاریخ تکی',
         type: FilterType.DATE_PICKER,
-        calendarSystems: ['jalali', 'miladi', 'ghamari'],
+        calendarSystems: [
+          'jalali',
+          'gregorian',
+          'hijri',
+        ] as DateCalendarSystem[],
       },
       {
         key: 'createdRange',
         label: 'بازه تاریخ',
         type: FilterType.DATE_RANGE_PICKER,
-        calendarSystems: ['jalali', 'miladi', 'ghamari'],
+        calendarSystems: [
+          'jalali',
+          'gregorian',
+          'hijri',
+        ] as DateCalendarSystem[],
       },
     ],
   },
@@ -310,8 +337,8 @@ export const persianLabels = {
   amountMin: 'از',
   amountMax: 'تا',
   calendarJalali: 'شمسی',
-  calendarMiladi: 'میلادی',
-  calendarGhamari: 'قمری',
+  calendarGregorian: 'میلادی',
+  calendarHijri: 'قمری',
   close: 'بستن',
   drawerExpandEmpty: 'باز کردن',
   emptyText: 'داده‌ای نیست',

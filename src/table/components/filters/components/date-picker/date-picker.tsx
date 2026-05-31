@@ -1,11 +1,12 @@
-import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import type { DatePickerRef } from 'react-multi-date-picker';
 import './date-picker.css';
 import { DATE_FORMAT, calendarSystemConfigs } from './date-picker.constants';
 import { MultiDatePicker } from './multi-date-picker';
 import { useTableDirection } from '../../../../table.direction';
 import type { DatePickerProps } from './date-picker.types';
 
-const DatePicker = forwardRef<unknown, DatePickerProps>(
+const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
   (
     {
       calendarSystem = 'jalali',
@@ -18,14 +19,30 @@ const DatePicker = forwardRef<unknown, DatePickerProps>(
     },
     ref,
   ) => {
-    const internalRef = useRef<unknown>(null);
+    const internalRef = useRef<DatePickerRef>(null);
     const dir = useTableDirection();
     const isRtl = dir === 'rtl';
     const calendarConfig = calendarSystemConfigs[calendarSystem];
     const resolvedPosition =
       calendarPosition ?? (isRtl ? 'bottom-end' : 'bottom-start');
 
-    useImperativeHandle(ref, () => internalRef.current);
+    useImperativeHandle(ref, () => internalRef.current as DatePickerRef);
+
+    useEffect(() => {
+      const handlePointerDown = (event: PointerEvent) => {
+        const picker = internalRef.current;
+        if (!picker?.isOpen) return;
+
+        const target = event.target;
+        if (!(target instanceof Node) || picker.contains(target)) return;
+
+        picker.closeCalendar();
+      };
+
+      document.addEventListener('pointerdown', handlePointerDown, true);
+      return () =>
+        document.removeEventListener('pointerdown', handlePointerDown, true);
+    }, []);
 
     return (
       <MultiDatePicker

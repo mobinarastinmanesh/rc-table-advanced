@@ -51,6 +51,11 @@ const DemoTable = () => {
       <AdvancedTable<DemoRecord, DemoFilters>
         columns={columns}
         data={paginatedData}
+        labels={{
+          calendarJalali: 'شمسی',
+          calendarGregorian: 'میلادی',
+          calendarHijri: 'قمری',
+        }}
         drawerFilterGroups={[
           {
             key: 'order',
@@ -113,13 +118,13 @@ const DemoTable = () => {
             key: 'createdAt',
             label: 'Date',
             type: FilterType.DATE_PICKER,
-            calendarSystems: ['jalali', 'miladi', 'ghamari'],
+            calendarSystems: ['jalali', 'gregorian', 'hijri'],
           },
           {
             key: 'createdRange',
             label: 'Date range',
             type: FilterType.DATE_RANGE_PICKER,
-            calendarSystems: ['jalali', 'miladi', 'ghamari'],
+            calendarSystems: ['jalali', 'gregorian', 'hijri'],
           },
         ]}
         filters={filters}

@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import type ReactDatePicker from 'react-multi-date-picker';
 
-export type DateCalendarSystem = 'jalali' | 'miladi' | 'ghamari';
+export type DateCalendarSystem = 'jalali' | 'gregorian' | 'hijri';
 export type DateValue = string;
 export type DateRangeValue = { from?: DateValue; to?: DateValue };
 

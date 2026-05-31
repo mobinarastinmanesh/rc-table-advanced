@@ -34,8 +34,8 @@ export type AdvancedTableLabels = {
   close: string;
   loadingFilter: (label: string) => string;
   calendarJalali: string;
-  calendarMiladi: string;
-  calendarGhamari: string;
+  calendarGregorian: string;
+  calendarHijri: string;
 };
 
 export const DEFAULT_LABELS: AdvancedTableLabels = {
@@ -71,9 +71,9 @@ export const DEFAULT_LABELS: AdvancedTableLabels = {
   amountMax: 'Max',
   close: 'Close',
   loadingFilter: (label) => `Loading ${label}...`,
-  calendarJalali: 'Jalali (Shamsi)',
-  calendarMiladi: 'Gregorian (Miladi)',
-  calendarGhamari: 'Hijri (Qamari)',
+  calendarJalali: 'Jalali (Persian)',
+  calendarGregorian: 'Gregorian',
+  calendarHijri: 'Hijri (Islamic Lunar)',
 };
 
 export const mergeLabels = (
