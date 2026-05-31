@@ -177,7 +177,8 @@ export function DemoTableSection({
           total: filteredData.length,
           pageSizeOptions: [{ value: 5 }, { value: 10 }, { value: 20 }],
         }}
-        realTimeSearch
+        searchTrigger="debounced"
+        searchDebounceMs={400}
         rowKey="id"
         showSizeChanger
         onFiltersChange={(nextFilters) => {

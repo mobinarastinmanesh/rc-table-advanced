@@ -39,7 +39,8 @@ export type {
   BaseFiltersState,
   FiltersProps,
   InlineFilterSchema,
-};
+  SearchTrigger,
+} from './filters.types';
 export type {
   DrawerFilterGroup,
   DrawerFilterProps,
@@ -65,6 +66,12 @@ export {
   hasAnyFilters,
   serialize,
 } from './filters.serialization';
+
+export {
+  buildNextFilters,
+  clearUserFilters,
+  isEmptyFilterValue,
+} from './filters.state';
 
 export { createFilterChildren, filterCreator } from './filters.creator';
 

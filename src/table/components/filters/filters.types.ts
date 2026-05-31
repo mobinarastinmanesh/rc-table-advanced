@@ -15,6 +15,9 @@ export enum FilterMode {
   ON_SUBMIT = 'on-submit',
 }
 
+/** How the search input applies its query. */
+export type SearchTrigger = 'debounced' | 'button' | 'instant';
+
 export type BaseFiltersState = {
   query?: string;
   sort?: string;
@@ -52,7 +55,10 @@ export interface FiltersProps<T extends BaseFiltersState> {
   filterModalSchema?: FilterSchema[];
   changeMode: FilterMode;
   tableKey?: string;
+  /** @deprecated Use {@link searchTrigger} `'instant'` instead. */
   realTimeSearch?: boolean;
+  searchTrigger?: SearchTrigger;
+  searchDebounceMs?: number;
   excludedKeys?: string[];
   hasModal?: boolean;
   headerContent?: ReactNode;
@@ -84,7 +90,8 @@ export interface SearchConfig {
   onSearch: (query: string) => void;
   query: string;
   label?: string;
-  realTimeSearch?: boolean;
+  searchTrigger: SearchTrigger;
+  searchDebounceMs: number;
 }
 
 export interface SortConfig {

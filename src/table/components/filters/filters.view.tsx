@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { FilterType } from './filters.types';
 import type {
@@ -120,6 +120,30 @@ const getFilterDisplayValue = <T extends BaseFiltersState>(
   return String(value);
 };
 
+const SearchIcon = () => (
+  <svg
+    aria-hidden="true"
+    className="rcta-search-field__icon"
+    fill="none"
+    height="16"
+    viewBox="0 0 16 16"
+    width="16"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M7.25 12.5a5.25 5.25 0 1 0 0-10.5 5.25 5.25 0 0 0 0 10.5Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="m11 11 3.5 3.5"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="1.5"
+    />
+  </svg>
+);
+
 const FiltersView = <T extends BaseFiltersState>({
   searchConfig,
   className,
@@ -143,6 +167,7 @@ const FiltersView = <T extends BaseFiltersState>({
   const [searchValue, setSearchValue] = useState(
     String(searchConfig?.query ?? ''),
   );
+  const debounceTimerRef = useRef<number | undefined>(undefined);
   const filterCount = calculateFilterCounts(filters, tableKey);
   const normalChildren = createFilterChildren(
     otherFilters,
@@ -168,6 +193,35 @@ const FiltersView = <T extends BaseFiltersState>({
     setSearchValue(String(searchConfig?.query ?? ''));
   }, [searchConfig?.query]);
 
+  const submitSearch = useCallback(
+    (query: string) => {
+      searchConfig?.onSearch(query);
+    },
+    [searchConfig],
+  );
+
+  useEffect(() => {
+    if (!searchConfig || searchConfig.searchTrigger !== 'debounced') {
+      return;
+    }
+
+    window.clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = window.setTimeout(() => {
+      if (searchValue === String(searchConfig.query ?? '')) {
+        return;
+      }
+
+      submitSearch(searchValue);
+    }, searchConfig.searchDebounceMs);
+
+    return () => window.clearTimeout(debounceTimerRef.current);
+  }, [searchConfig, searchValue, submitSearch]);
+
+  useEffect(
+    () => () => window.clearTimeout(debounceTimerRef.current),
+    [],
+  );
+
   return (
     <div
       className={clsx('rcta-filters', classNames?.filterWrapper, className)}
@@ -175,27 +229,44 @@ const FiltersView = <T extends BaseFiltersState>({
     >
       <div className={clsx('rcta-filters__bar', classNames?.filterBar)}>
         {hasSearch && searchConfig ? (
-          <input
+          <div
             className={clsx(
-              'rcta-input',
-              'rcta-filters__search',
+              'rcta-search-field',
               classNames?.filterSearch,
             )}
-            placeholder={searchConfig.label ?? labels.search}
-            type="search"
-            value={searchValue}
-            onChange={(event) => {
-              setSearchValue(event.target.value);
-              if (searchConfig.realTimeSearch) {
-                searchConfig.onSearch(event.target.value);
-              }
-            }}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                searchConfig.onSearch(event.currentTarget.value);
-              }
-            }}
-          />
+          >
+            <input
+              className={clsx('rcta-input', 'rcta-search-field__input')}
+              placeholder={searchConfig.label ?? labels.search}
+              type="search"
+              value={searchValue}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                setSearchValue(nextValue);
+                if (searchConfig.searchTrigger === 'instant') {
+                  submitSearch(nextValue);
+                }
+              }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  window.clearTimeout(debounceTimerRef.current);
+                  submitSearch(event.currentTarget.value);
+                }
+              }}
+            />
+            <button
+              aria-label={searchConfig.label ?? labels.search}
+              className="rcta-search-field__submit"
+              type="button"
+              onClick={() => {
+                window.clearTimeout(debounceTimerRef.current);
+                submitSearch(searchValue);
+              }}
+            >
+              <SearchIcon />
+            </button>
+          </div>
         ) : null}
 
         {hasSort && sortConfig ? (

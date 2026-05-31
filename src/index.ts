@@ -28,6 +28,9 @@ export {
   hasAnyFilters,
   serialize,
   useQueryControl,
+  buildNextFilters,
+  clearUserFilters,
+  isEmptyFilterValue,
 } from './table/components/filters';
 export { getPaginationSnapshot } from './table/pagination.utils';
 export { Dropdown } from './table/components/ui/dropdown';
@@ -87,6 +90,7 @@ export type {
   FiltersProps,
   FilterRenderProps,
   Option,
+  SearchTrigger,
 } from './table/components/filters';
 
 /** @deprecated Use {@link AdvancedTableBaseProps} */

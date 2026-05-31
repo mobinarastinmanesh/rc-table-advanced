@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { getSortOptions } from './filters.constants';
-import { FilterMode } from './filters.types';
+import { FilterMode, type SearchTrigger } from './filters.types';
 import type {
   BaseFiltersState,
   FilterValue,
@@ -9,12 +9,31 @@ import type {
   SortConfig,
 } from './filters.types';
 
+const DEFAULT_SEARCH_DEBOUNCE_MS = 300;
+
+const resolveSearchTrigger = (
+  searchTrigger: SearchTrigger | undefined,
+  realTimeSearch: boolean | undefined,
+): SearchTrigger => {
+  if (searchTrigger) {
+    return searchTrigger;
+  }
+
+  if (realTimeSearch === true) {
+    return 'instant';
+  }
+
+  return 'button';
+};
+
 function FiltersWrap<T extends BaseFiltersState>({
   renderItem,
   tableKey = '',
   hasSearch = true,
   searchLabel,
-  realTimeSearch = false,
+  realTimeSearch,
+  searchTrigger: searchTriggerProp,
+  searchDebounceMs = DEFAULT_SEARCH_DEBOUNCE_MS,
   hasSort = true,
   sortOptions = getSortOptions(),
   changeMode = FilterMode.ON_CHANGE,
@@ -57,13 +76,15 @@ function FiltersWrap<T extends BaseFiltersState>({
   }, [filters, excludedKeys]);
 
   const key = tableKey ? `${tableKey}_` : '';
+  const searchTrigger = resolveSearchTrigger(searchTriggerProp, realTimeSearch);
   const searchConfig: SearchConfig | undefined = hasSearch
     ? {
-        realTimeSearch,
         onSearch: (query: string) =>
           setFilters(`${key}query` as keyof T, query as FilterValue),
         query: String(filters[`${key}query` as keyof T] ?? ''),
         label: searchLabel,
+        searchTrigger,
+        searchDebounceMs,
       }
     : undefined;
 
