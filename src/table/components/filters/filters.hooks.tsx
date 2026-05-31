@@ -4,6 +4,7 @@ import type {
   FilterValue,
   UseFilterReturn,
 } from './filters.types';
+import { clearUserFilters, isEmptyFilterValue } from './filters.state';
 import { deserialize, serialize } from './filters.serialization';
 
 type QueryControlOptions = {
@@ -28,15 +29,7 @@ export const useQueryControl = <T extends BaseFiltersState>(
     [syncUrl],
   );
 
-  const isEmptyValue = (val: unknown): boolean =>
-    val === undefined ||
-    val === null ||
-    val === '' ||
-    (Array.isArray(val) && val.length === 0) ||
-    (typeof val === 'object' &&
-      val !== null &&
-      !Array.isArray(val) &&
-      Object.values(val).filter(Boolean).length === 0);
+  const isEmptyValue = isEmptyFilterValue;
 
   const safeDeserialize = (value: string) => {
     try {
@@ -176,14 +169,19 @@ export const useQueryControl = <T extends BaseFiltersState>(
   }, [state, buildSearchParams, debouncedWrite, getSearchParams, syncUrl]);
 
   const setFilter = useCallback((key: keyof T, value: FilterValue | null | undefined) => {
-    setState((prev) => ({
-      ...prev,
-      [key]: isEmptyValue(value) ? undefined : (value as T[keyof T]),
-    }));
+    setState((prev) => {
+      if (isEmptyValue(value)) {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      }
+
+      return { ...prev, [key]: value as T[keyof T] };
+    });
   }, []);
 
   const clearFilters = useCallback(() => {
-    setState(initialState ?? ({} as T));
+    setState((prev) => clearUserFilters(prev, initialState));
   }, [initialState]);
 
   return {

@@ -8,9 +8,16 @@ import FilterModal from './components/filters/filter-modal';
 import Filters from './components/filters/filters';
 import { useQueryControl } from './components/filters/filters.hooks';
 import {
+  buildNextFilters,
+  clearUserFilters,
+  isEmptyFilterValue,
+  serializeFilters,
+} from './components/filters/filters.state';
+import {
   FilterMode,
   type BaseFiltersState,
   type FilterValue,
+  type SearchTrigger,
 } from './components/filters/filters.types';
 import type {
   FilterSchema,
@@ -35,16 +42,24 @@ export interface AdvancedTableChange<TFilters extends BaseFiltersState> {
   paginationChanged?: boolean;
 }
 
-const isFilterValueEmpty = (value: FilterSchemaValue | undefined): boolean =>
-  value === undefined ||
-  value === null ||
-  value === '' ||
-  (Array.isArray(value) && value.length === 0) ||
-  (typeof value === 'object' &&
-    !Array.isArray(value) &&
-    Object.values(value).every(
-      (item) => item === undefined || item === null || item === '',
-    ));
+const isFilterValueEmpty = isEmptyFilterValue;
+
+const DEFAULT_SEARCH_DEBOUNCE_MS = 300;
+
+const resolveSearchTrigger = (
+  searchTrigger: SearchTrigger | undefined,
+  realTimeSearch: boolean | undefined,
+): SearchTrigger => {
+  if (searchTrigger) {
+    return searchTrigger;
+  }
+
+  if (realTimeSearch === true) {
+    return 'instant';
+  }
+
+  return 'button';
+};
 
 export interface AdvancedTableProps<
   RecordType,
@@ -59,7 +74,11 @@ export interface AdvancedTableProps<
   drawerFilterGroups?: DrawerFilterGroup[];
   filterMode?: FilterMode;
   searchLabel?: string;
+  /** @deprecated Use {@link searchTrigger} `'instant'` instead. */
   realTimeSearch?: boolean;
+  /** `'debounced'` auto-search with delay, `'button'` on icon/Enter, `'instant'` on every keystroke. Default `'button'`. */
+  searchTrigger?: SearchTrigger;
+  searchDebounceMs?: number;
   hasSearch?: boolean;
   hasSort?: boolean;
   /** Override built-in UI strings (search, filters, pagination, calendars, …). */
@@ -72,6 +91,7 @@ export interface AdvancedTableProps<
 
 export type { TableDirection } from './table.direction';
 export type { DrawerPlacement } from './table.drawer-placement';
+export type { SearchTrigger } from './components/filters/filters.types';
 
 const AdvancedTable = <
   RecordType extends DefaultRecordType,
@@ -87,6 +107,8 @@ const AdvancedTable = <
   filterMode = FilterMode.ON_CHANGE,
   searchLabel,
   realTimeSearch,
+  searchTrigger: searchTriggerProp,
+  searchDebounceMs = DEFAULT_SEARCH_DEBOUNCE_MS,
   hasSearch = true,
   hasSort = true,
   labels: labelsProp,
@@ -98,6 +120,7 @@ const AdvancedTable = <
   ...tableProps
 }: AdvancedTableProps<RecordType, TFilters>) => {
   const labels = useMemo(() => mergeLabels(labelsProp), [labelsProp]);
+  const searchTrigger = resolveSearchTrigger(searchTriggerProp, realTimeSearch);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const isControlled = controlledFilters !== undefined;
@@ -109,9 +132,16 @@ const AdvancedTable = <
   const filters = controlledFilters ?? queryControl.filters;
   const paginationRef = useRef(pagination);
   paginationRef.current = pagination;
+  const lastEmittedRef = useRef<string>(serializeFilters(filters));
 
   const emitChange = useCallback(
     (nextFilters: TFilters) => {
+      const serialized = serializeFilters(nextFilters);
+      if (serialized === lastEmittedRef.current) {
+        return;
+      }
+
+      lastEmittedRef.current = serialized;
       onChange?.({
         filters: nextFilters,
         pagination: getPaginationSnapshot(paginationRef.current),
@@ -126,25 +156,42 @@ const AdvancedTable = <
 
   const setFilters = useCallback(
     (key: keyof TFilters, value: FilterValue) => {
-      const next = { ...filters, [key]: value } as TFilters;
+      const next = buildNextFilters(filters, key, value);
 
       if (!isControlled) {
         queryControl.setFilters(key, value);
       }
 
       onFiltersChange?.(next);
+
+      if (filterMode === FilterMode.ON_CHANGE) {
+        emitChange(next);
+      }
     },
-    [filters, isControlled, onFiltersChange, queryControl],
+    [emitChange, filterMode, filters, isControlled, onFiltersChange, queryControl],
   );
 
   const clearFilters = useCallback(() => {
+    const next = clearUserFilters(filters, initialFilters);
+
     if (!isControlled) {
       queryControl.clearFilters();
     }
 
-    const next = (initialFilters ?? {}) as TFilters;
     onFiltersChange?.(next);
-  }, [initialFilters, isControlled, onFiltersChange, queryControl]);
+
+    if (filterMode === FilterMode.ON_CHANGE) {
+      emitChange(next);
+    }
+  }, [
+    emitChange,
+    filterMode,
+    filters,
+    initialFilters,
+    isControlled,
+    onFiltersChange,
+    queryControl,
+  ]);
 
   const modalValues = useMemo(
     () =>
@@ -242,7 +289,9 @@ const AdvancedTable = <
         hasSearch={hasSearch}
         hasSort={hasSort}
         realTimeSearch={realTimeSearch}
+        searchDebounceMs={searchDebounceMs}
         searchLabel={searchLabel ?? labels.search}
+        searchTrigger={searchTrigger}
         setFilters={setFilters}
         sortOptions={sortOptions}
         onOpenDrawer={
