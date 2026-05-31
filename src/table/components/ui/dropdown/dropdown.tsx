@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
   type KeyboardEvent,
@@ -71,15 +72,18 @@ const Dropdown = ({
     menuRef,
   );
 
-  const selectedValues = multiple
-    ? Array.isArray(value)
-      ? value
-      : []
-    : typeof value === 'string'
-      ? [value]
-      : [];
+  const selectedValues = useMemo(() => {
+    if (multiple) {
+      return Array.isArray(value) ? value : [];
+    }
 
-  const allOptions = emptyOption ? [emptyOption, ...options] : options;
+    return typeof value === 'string' ? [value] : [];
+  }, [multiple, value]);
+
+  const allOptions = useMemo(
+    () => (emptyOption ? [emptyOption, ...options] : options),
+    [emptyOption, options],
+  );
 
   const getDisplayLabel = () => {
     if (multiple) {
@@ -154,18 +158,23 @@ const Dropdown = ({
   useEffect(() => {
     if (!open) return;
 
-    updatePosition();
-    const frame = window.requestAnimationFrame(() => updatePosition());
-
     const selectedIndex = allOptions.findIndex((item) =>
       multiple
         ? selectedValues.includes(item.value)
         : item.value === value || (!value && emptyOption?.value === item.value),
     );
-    setHighlightIndex(selectedIndex >= 0 ? selectedIndex : 0);
+    const nextIndex = selectedIndex >= 0 ? selectedIndex : 0;
+    setHighlightIndex((current) => (current === nextIndex ? current : nextIndex));
+  }, [allOptions, emptyOption, multiple, open, selectedValues, value]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    updatePosition();
+    const frame = window.requestAnimationFrame(() => updatePosition());
 
     return () => window.cancelAnimationFrame(frame);
-  }, [allOptions, emptyOption, multiple, open, selectedValues, updatePosition, value]);
+  }, [open, updatePosition]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (disabled) return;

@@ -26,7 +26,9 @@ const hasFilterValue = (value: FilterValue | undefined): boolean => {
   }
 
   if (typeof value === 'object') {
-    return Object.values(value).some((item) => hasFilterValue(item as FilterValue));
+    return Object.values(value).some((item) =>
+      hasFilterValue(item as FilterValue),
+    );
   }
 
   return true;
@@ -49,7 +51,9 @@ const getOptionDisplayValue = (
   const labels = selectedValues
     .map((item) => {
       const option = options.find((entry) => entry.value === item);
-      return option ? ('title' in option ? option.title : undefined) ?? option.label : undefined;
+      return option
+        ? (('title' in option ? option.title : undefined) ?? option.label)
+        : undefined;
     })
     .filter(Boolean);
 
@@ -217,10 +221,7 @@ const FiltersView = <T extends BaseFiltersState>({
     return () => window.clearTimeout(debounceTimerRef.current);
   }, [searchConfig, searchValue, submitSearch]);
 
-  useEffect(
-    () => () => window.clearTimeout(debounceTimerRef.current),
-    [],
-  );
+  useEffect(() => () => window.clearTimeout(debounceTimerRef.current), []);
 
   return (
     <div
@@ -229,12 +230,7 @@ const FiltersView = <T extends BaseFiltersState>({
     >
       <div className={clsx('rcta-filters__bar', classNames?.filterBar)}>
         {hasSearch && searchConfig ? (
-          <div
-            className={clsx(
-              'rcta-search-field',
-              classNames?.filterSearch,
-            )}
-          >
+          <div className={clsx('rcta-search-field', classNames?.filterSearch)}>
             <input
               className={clsx('rcta-input', 'rcta-search-field__input')}
               placeholder={searchConfig.label ?? labels.search}
@@ -333,7 +329,11 @@ const FiltersView = <T extends BaseFiltersState>({
             );
           })}
           {clearFilters ? (
-            <button className="rcta-button" type="button" onClick={clearFilters}>
+            <button
+              className="rcta-button"
+              type="button"
+              onClick={clearFilters}
+            >
               {labels.clearAllFilters}
             </button>
           ) : null}

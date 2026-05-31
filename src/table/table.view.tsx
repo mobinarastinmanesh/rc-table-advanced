@@ -71,12 +71,12 @@ const TableView = <RecordType extends DefaultRecordType>({
         <Dropdown
           ariaLabel={labels.paginationRowsPerPage}
           className="rcta-pagination__size"
-          options={(pagination.pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS).map(
-            (option) => ({
-              value: String(option.value),
-              label: String(option.label ?? option.value),
-            }),
-          )}
+          options={(
+            pagination.pageSizeOptions ?? DEFAULT_PAGE_SIZE_OPTIONS
+          ).map((option) => ({
+            value: String(option.value),
+            label: String(option.label ?? option.value),
+          }))}
           value={String(pagination.pageSize)}
           onChange={(next) => {
             if (typeof next === 'string') onPageSizeChange(Number(next));

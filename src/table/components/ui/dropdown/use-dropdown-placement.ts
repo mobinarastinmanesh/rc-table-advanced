@@ -39,14 +39,26 @@ export const useDropdownPlacement = (
     const available = openUp ? spaceAbove : spaceBelow;
     const maxHeight = Math.max(120, Math.min(DEFAULT_MAX_HEIGHT, available - MENU_GAP));
 
-    setPlacement(nextPlacement);
-    setCoords({
-      left: rect.left,
-      width: rect.width,
-      maxHeight,
-      top: openUp
-        ? rect.top - MENU_GAP
-        : rect.bottom + MENU_GAP,
+    setPlacement((current) =>
+      current === nextPlacement ? current : nextPlacement,
+    );
+    setCoords((current) => {
+      const nextTop = openUp ? rect.top - MENU_GAP : rect.bottom + MENU_GAP;
+      if (
+        current.left === rect.left &&
+        current.width === rect.width &&
+        current.maxHeight === maxHeight &&
+        current.top === nextTop
+      ) {
+        return current;
+      }
+
+      return {
+        left: rect.left,
+        width: rect.width,
+        maxHeight,
+        top: nextTop,
+      };
     });
   }, [menuRef, triggerRef]);
 

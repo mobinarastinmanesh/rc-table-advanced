@@ -24,7 +24,9 @@ import {
   type DemoRecord,
 } from './demo-data';
 
-type TableProps = ComponentProps<typeof AdvancedTable<DemoRecord, DemoFilters>> & {
+type TableProps = ComponentProps<
+  typeof AdvancedTable<DemoRecord, DemoFilters>
+> & {
   classNames?: AdvancedTableClassNames;
   labels?: Partial<AdvancedTableLabels>;
 };
@@ -104,7 +106,12 @@ const persianColumns: TableColumnType<DemoRecord>[] = [
       tags?.map((tag) => tagLabelFa[tag] ?? tag).join('، ') || '—',
   },
   { title: 'مبلغ', dataIndex: 'amount', key: 'amount' },
-  { title: 'تاریخ ایجاد', dataIndex: 'createdAt', key: 'createdAt', width: 120 },
+  {
+    title: 'تاریخ ایجاد',
+    dataIndex: 'createdAt',
+    key: 'createdAt',
+    width: 120,
+  },
 ];
 
 export type DemoTableSectionProps = {
@@ -137,10 +144,10 @@ export function DemoTableSection({
   });
 
   const isRtl = dir === 'rtl';
-  const columns =
-    columnsProp ?? (isRtl ? persianColumns : englishColumns);
+  const columns = columnsProp ?? (isRtl ? persianColumns : englishColumns);
   const modalSchema =
-    filterModalSchemaProp ?? (isRtl ? persianFilterModalSchema : filterModalSchema);
+    filterModalSchemaProp ??
+    (isRtl ? persianFilterModalSchema : filterModalSchema);
   const drawerGroups =
     drawerFilterGroupsProp ??
     (isRtl ? persianDrawerFilterGroups : drawerFilterGroups);

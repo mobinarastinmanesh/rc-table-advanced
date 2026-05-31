@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useDialogA11y } from '../../../hooks/use-dialog-a11y';
 import type { DrawerFilterClassNames } from '../../table.class-names';
@@ -78,11 +78,6 @@ const DrawerFilter = ({
     wasOpenRef.current = open;
   }, [groups, open, values]);
 
-  const selectedCount = useMemo(
-    () => Object.values(draft).filter(hasValue).length,
-    [draft],
-  );
-
   if (!open) return null;
 
   const clearAll = () => {
@@ -115,10 +110,7 @@ const DrawerFilter = ({
         onClick={(event) => event.stopPropagation()}
       >
         <div className={clsx('rcta-drawer__header', classNames?.drawerHeader)}>
-          <div>
-            <h2 id={titleId}>{drawerTitle}</h2>
-            <span>{labels.drawerSelectedCount(selectedCount)}</span>
-          </div>
+          <h2 id={titleId}>{drawerTitle}</h2>
           <button
             aria-label={labels.close}
             className="rcta-icon-button"
