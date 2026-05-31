@@ -1,6 +1,6 @@
 {
   "name": "rc-table-advanced",
-  "version": "0.2.10",
+  "version": "1.0.0",
   "description": "Typed React advanced table on rc-table — filters, pagination, error cells, drawer & modal filters. Live demo included.",
   "type": "module",
   "license": "MIT",
