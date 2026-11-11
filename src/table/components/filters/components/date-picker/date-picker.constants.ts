@@ -18,7 +18,10 @@ export const calendarSystemLabels: Record<DateCalendarSystem, string> = {
 };
 
 export const getCalendarSystemLabels = (
-  labels: Record<'calendarJalali' | 'calendarGregorian' | 'calendarHijri', string>,
+  labels: Record<
+    'calendarJalali' | 'calendarGregorian' | 'calendarHijri',
+    string
+  >,
 ): Record<DateCalendarSystem, string> => ({
   jalali: labels.calendarJalali,
   gregorian: labels.calendarGregorian,

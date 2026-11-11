@@ -3,8 +3,9 @@ import MultiDatePickerImport from 'react-multi-date-picker';
 
 type MultiDatePickerProps = Record<string, unknown>;
 
-
-function resolveMultiDatePicker(mod: any): ComponentType<MultiDatePickerProps> {
+function resolveMultiDatePicker(
+  mod: unknown,
+): ComponentType<MultiDatePickerProps> {
   if (!mod) {
     throw new Error(
       'react-multi-date-picker failed to load. Ensure it is installed.',
@@ -12,7 +13,7 @@ function resolveMultiDatePicker(mod: any): ComponentType<MultiDatePickerProps> {
   }
 
   if (typeof mod === 'function') {
-    return mod;
+    return mod as ComponentType<MultiDatePickerProps>;
   }
 
   if (typeof mod === 'object') {
@@ -26,11 +27,11 @@ function resolveMultiDatePicker(mod: any): ComponentType<MultiDatePickerProps> {
 
     // forwardRef components are plain objects with $$typeof
     if ('$$typeof' in mod) {
-      return mod;
+      return mod as ComponentType<MultiDatePickerProps>;
     }
   }
 
-  return mod;
+  throw new Error('Invalid react-multi-date-picker export');
 }
 
 export const MultiDatePicker = resolveMultiDatePicker(MultiDatePickerImport);

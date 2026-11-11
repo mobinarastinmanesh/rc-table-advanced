@@ -8,9 +8,25 @@ function App() {
       <header className="demo-header">
         <h1>rc-table-advanced</h1>
         <p>
-          Full-featured demo: search, sort, filter chips, modal filters (all types
-          including multi-calendar dates), drawer filters, validation cells, and
-          pagination with page size.
+          <strong>2.0.0-rc.0 — release candidate</strong>
+        </p>
+        <nav aria-label="Project links">
+          <a href={`${import.meta.env.BASE_URL}docs/getting-started/`}>
+            Documentation
+          </a>
+          {' · '}
+          <a href={`${import.meta.env.BASE_URL}docs/migration/`}>
+            Migration guide
+          </a>
+          {' · '}
+          <a href="https://github.com/mobinarastinmanesh/rc-table-advanced">
+            GitHub
+          </a>
+        </nav>
+        <p>
+          Full-featured demo: search, sort, filter chips, modal filters (all
+          types including multi-calendar dates), drawer filters, validation
+          cells, and pagination with page size.
         </p>
       </header>
 

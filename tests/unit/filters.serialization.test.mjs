@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { test } from 'vitest';
 import {
   calculateFilterCounts,
   deserialize,
   hasAnyFilters,
   serialize,
-} from '../dist/rc-table-advanced.es.js';
+} from '../../src/index.ts';
 
 test('serializes and deserializes structured filter values', () => {
   const value = { status: ['paid', 'draft'], amount: { min: 10 } };

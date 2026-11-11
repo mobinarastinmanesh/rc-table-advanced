@@ -35,7 +35,10 @@ const hasFilterValue = (value: FilterValue | undefined): boolean => {
 };
 
 const getOptionDisplayValue = (
-  schema: FilterSchema | InlineFilterSchema<unknown> | undefined,
+  schema:
+    | FilterSchema
+    | InlineFilterSchema<Record<string, unknown>>
+    | undefined,
   value: FilterValue,
 ) => {
   const options =
@@ -94,7 +97,10 @@ const getFilterDisplayValue = <T extends BaseFiltersState>(
   schema: FilterSchema | InlineFilterSchema<T> | undefined,
 ) => {
   const optionLabel = getOptionDisplayValue(
-    schema as FilterSchema | InlineFilterSchema<unknown> | undefined,
+    schema as
+      | FilterSchema
+      | InlineFilterSchema<Record<string, unknown>>
+      | undefined,
     value,
   );
 
@@ -150,6 +156,12 @@ const SearchIcon = () => (
 
 const FiltersView = <T extends BaseFiltersState>({
   searchConfig,
+  children,
+  headerContent,
+  subTitle,
+  filteredItemCount,
+  hasModal = true,
+  isSubmitDisabled,
   className,
   sortConfig,
   otherFilters,
@@ -158,6 +170,7 @@ const FiltersView = <T extends BaseFiltersState>({
   setFilters,
   filters,
   filterModalSchema,
+  filterChipSchema,
   tableKey = '',
   changeMode,
   clearFilters,
@@ -180,6 +193,7 @@ const FiltersView = <T extends BaseFiltersState>({
   );
   const schemasByKey = new Map<string, FilterSchema | InlineFilterSchema<T>>([
     ...(otherFilters ?? []).map((item) => [item.key, item] as const),
+    ...(filterChipSchema ?? []).map((item) => [item.key, item] as const),
     ...(filterModalSchema ?? []).map((item) => [item.key, item] as const),
   ]);
 
@@ -228,6 +242,11 @@ const FiltersView = <T extends BaseFiltersState>({
       className={clsx('rcta-filters', classNames?.filterWrapper, className)}
       dir={dir}
     >
+      {headerContent}
+      {subTitle ? <p>{subTitle}</p> : null}
+      {filteredItemCount !== undefined ? (
+        <p role="status">{labels.filteredItemCount(filteredItemCount)}</p>
+      ) : null}
       <div className={clsx('rcta-filters__bar', classNames?.filterBar)}>
         {hasSearch && searchConfig ? (
           <div className={clsx('rcta-search-field', classNames?.filterSearch)}>
@@ -235,6 +254,7 @@ const FiltersView = <T extends BaseFiltersState>({
               className={clsx('rcta-input', 'rcta-search-field__input')}
               placeholder={searchConfig.label ?? labels.search}
               type="search"
+              aria-label={searchConfig.label ?? labels.search}
               value={searchValue}
               onChange={(event) => {
                 const nextValue = event.target.value;
@@ -267,7 +287,7 @@ const FiltersView = <T extends BaseFiltersState>({
 
         {hasSort && sortConfig ? (
           <Dropdown
-            ariaLabel="Sort"
+            ariaLabel={labels.sortPlaceholder}
             className="rcta-filters__sort"
             options={sortConfig.options.map((option) => ({
               value: option.value,
@@ -286,7 +306,9 @@ const FiltersView = <T extends BaseFiltersState>({
           <div key={`filter-child-${index}`}>{child}</div>
         ))}
 
-        {filterModalSchema?.length ? (
+        {children}
+
+        {hasModal && filterModalSchema?.length ? (
           <button className="rcta-button" type="button" onClick={onOpenModal}>
             {labels.filtersButton}
             {filterCount ? ` (${filterCount})` : ''}
@@ -300,7 +322,12 @@ const FiltersView = <T extends BaseFiltersState>({
         ) : null}
 
         {changeMode === 'on-submit' ? (
-          <button className="rcta-button" type="button" onClick={applyFilter}>
+          <button
+            className="rcta-button"
+            type="button"
+            disabled={isSubmitDisabled}
+            onClick={applyFilter}
+          >
             {labels.applyButton}
           </button>
         ) : null}

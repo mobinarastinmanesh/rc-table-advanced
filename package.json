@@ -1,7 +1,7 @@
 {
   "name": "rc-table-advanced",
-  "version": "1.0.0",
-  "description": "Typed React advanced table on rc-table — filters, pagination, error cells, drawer & modal filters. Live demo included.",
+  "version": "2.0.0-rc.0",
+  "description": "React table for admin apps with schema-driven filters, server-side pagination, RTL and multi-calendar date pickers.",
   "type": "module",
   "license": "MIT",
   "author": "mobinarastinmanesh (https://github.com/mobinarastinmanesh)",
@@ -14,26 +14,44 @@
     "url": "https://github.com/mobinarastinmanesh/rc-table-advanced/issues"
   },
   "sideEffects": [
-    "./dist/rc-table-advanced.es.js",
-    "./dist/rc-table-advanced.cjs.js"
+    "./dist/rc-table-advanced.js",
+    "./dist/rc-table-advanced.cjs",
+    "**/*.css"
   ],
-  "main": "./dist/rc-table-advanced.cjs.js",
-  "module": "./dist/rc-table-advanced.es.js",
-  "types": "./types/index.d.ts",
+  "main": "./dist/rc-table-advanced.cjs",
+  "module": "./dist/rc-table-advanced.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./types/index.d.ts",
-      "import": "./dist/rc-table-advanced.es.js",
-      "require": "./dist/rc-table-advanced.cjs.js"
-    }
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/rc-table-advanced.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/rc-table-advanced.cjs"
+      }
+    },
+    "./core": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/core.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/core.cjs"
+      }
+    },
+    "./styles.css": "./dist/rc-table-advanced.css",
+    "./package.json": "./package.json"
   },
   "files": [
-    "dist/rc-table-advanced.cjs.js",
-    "dist/rc-table-advanced.es.js",
-    "dist/rc-table-advanced.css",
-    "types",
+    "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md",
+    "docs",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "keywords": [
     "react",
@@ -54,24 +72,37 @@
     "date-picker-filter"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19.0"
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "registry": "https://registry.npmjs.org",
+    "tag": "next"
   },
   "scripts": {
     "dev": "npm run dev --prefix example",
-    "build": "vite build && tsc -p tsconfig.build.json",
-    "prepublishOnly": "npm run test",
-    "test": "npm run build && node --test tests/*.test.mjs",
-    "lint": "tsc --noEmit -p tsconfig.json",
-    "lint:fix": "prettier . --write",
-    "format": "prettier . --write"
+    "build": "vite build && tsc -p tsconfig.build.json && node scripts/build-types.mjs",
+    "prepublishOnly": "npm run check",
+    "test": "npm run test:coverage && npm run test:integration",
+    "lint": "eslint src scripts tests vite.config.ts vitest.config.ts playwright.config.ts && npm run typecheck",
+    "lint:fix": "eslint src scripts tests vite.config.ts vitest.config.ts playwright.config.ts --fix",
+    "format": "prettier src scripts tests docs fixtures/next/app example/src README.md CHANGELOG.md --write",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:package": "node scripts/test-package.mjs",
+    "build:docs": "npm run coverage:check && npm run build && npm run build:pages --prefix example",
+    "check": "npm run lint && npm test && npm run test:package && npm run build:docs && npm run test:next && npm run test:browser",
+    "format:check": "prettier src scripts tests docs README.md CHANGELOG.md --check",
+    "test:next": "node scripts/test-next.mjs",
+    "test:browser": "playwright test",
+    "test:integration": "npm run build && node --test tests/*.test.mjs",
+    "test:unit": "vitest run",
+    "test:coverage": "vitest run --coverage && node scripts/update-coverage-docs.mjs",
+    "coverage:check": "node scripts/update-coverage-docs.mjs --check",
+    "test:react18": "node scripts/with-react-version.mjs 18.3.1 npm test"
   },
   "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18"
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -80,13 +111,32 @@
     "react-multi-date-picker": "^4.5.2"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.0",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/node": "24.12.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "@vitest/coverage-v8": "^4.1.12",
+    "eslint": "^10.14.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "fast-check": "^4.10.2",
+    "globals": "^17.14.0",
+    "jsdom": "^27.4.0",
+    "marked": "^18.2.0",
+    "next": "^16.4.6",
     "prettier": "3.8.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "rollup": "^4.68.2",
+    "rollup-plugin-dts": "^6.5.1",
     "typescript": "~5.9.3",
-    "vite": "4.5.14"
+    "typescript-eslint": "^8.72.2",
+    "vite": "^8.3.8",
+    "vitest": "^4.1.12"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
   }
 }

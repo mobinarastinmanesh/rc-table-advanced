@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { test } from 'node:test';
+import { test } from 'vitest';
 import {
   buildNextFilters,
   clearUserFilters,
   isEmptyFilterValue,
-} from '../dist/rc-table-advanced.es.js';
+} from '../../src/index.ts';
 
 test('removes empty filter keys instead of storing undefined', () => {
   const current = { query: 'test', status: 'paid' };

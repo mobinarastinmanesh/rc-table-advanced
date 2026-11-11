@@ -12,11 +12,11 @@ import {
   LabelsProvider,
   TableCell,
   getSortOptions,
-} from '../dist/rc-table-advanced.es.js';
+} from '../dist/rc-table-advanced.js';
 
 test('renders invalid table fields with accessible error markup', () => {
   const html = renderToStaticMarkup(
-    TableCell({
+    createElement(TableCell, {
       value: {
         value: 'Bad value',
         isValid: false,
@@ -33,10 +33,10 @@ test('renders invalid table fields with accessible error markup', () => {
 test('exposes aligned pagination and sort defaults', () => {
   assert.equal(DEFAULT_PAGE_SIZE, 10);
   assert.equal(DEFAULT_SORT, 'newest');
-  assert.deepEqual(getSortOptions().map((option) => option.value), [
-    'newest',
-    'oldest',
-  ]);
+  assert.deepEqual(
+    getSortOptions().map((option) => option.value),
+    ['newest', 'oldest'],
+  );
 });
 
 test('exports filter modes for submit and live workflows', () => {

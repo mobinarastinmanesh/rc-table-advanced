@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import type { ReactNode } from 'react';
 import {
   AmountRangeFilter,
@@ -19,6 +20,7 @@ import { FilterType } from './filters-schema.types';
 
 export interface FilterRendererProps {
   schema: FilterSchema;
+  error?: string;
   value: FilterSchemaValue;
   onChange: (key: string, value: FilterSchemaValue) => void;
 }
@@ -43,7 +45,7 @@ const getAmountRangeValue = (
       }
     : undefined;
 
-const FilterRenderer = ({ schema, value, onChange }: FilterRendererProps) => {
+const FilterControl = ({ schema, value, onChange }: FilterRendererProps) => {
   const setValue = (nextValue: FilterSchemaValue) => {
     onChange(schema.key, nextValue);
     schema.onChange?.(schema.key, nextValue as never);
@@ -122,4 +124,26 @@ const FilterRenderer = ({ schema, value, onChange }: FilterRendererProps) => {
   }
 };
 
+const FilterRenderer = (props: FilterRendererProps) => {
+  const id = useId();
+  return (
+    <div
+      role="group"
+      aria-label={props.schema.label}
+      aria-invalid={props.error ? true : undefined}
+      aria-describedby={props.error || props.schema.helperText ? id : undefined}
+    >
+      <FilterControl {...props} />
+      {props.error || props.schema.helperText ? (
+        <p
+          id={id}
+          role={props.error ? 'alert' : undefined}
+          className="rcta-field__help"
+        >
+          {props.error ?? props.schema.helperText}
+        </p>
+      ) : null}
+    </div>
+  );
+};
 export default FilterRenderer;

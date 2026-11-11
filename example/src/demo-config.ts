@@ -1,3 +1,4 @@
+import type { DemoFilters } from './demo-data';
 import {
   FilterType,
   type DateCalendarSystem,
@@ -5,7 +6,7 @@ import {
   type FilterSchema,
 } from 'rc-table-advanced';
 
-export const filterModalSchema: FilterSchema[] = [
+export const filterModalSchema: FilterSchema<DemoFilters>[] = [
   {
     key: 'status',
     label: 'Status',
@@ -72,7 +73,7 @@ export const filterModalSchema: FilterSchema[] = [
   },
 ];
 
-export const drawerFilterGroups: DrawerFilterGroup[] = [
+export const drawerFilterGroups: DrawerFilterGroup<DemoFilters>[] = [
   {
     key: 'order',
     title: 'Order filters',
@@ -159,7 +160,7 @@ export const drawerFilterGroups: DrawerFilterGroup[] = [
   },
 ];
 
-export const persianFilterModalSchema: FilterSchema[] = [
+export const persianFilterModalSchema: FilterSchema<DemoFilters>[] = [
   {
     key: 'status',
     label: 'وضعیت',
@@ -220,7 +221,7 @@ export const persianFilterModalSchema: FilterSchema[] = [
   },
 ];
 
-export const persianDrawerFilterGroups: DrawerFilterGroup[] = [
+export const persianDrawerFilterGroups: DrawerFilterGroup<DemoFilters>[] = [
   {
     key: 'order',
     title: 'فیلترهای سفارش',
@@ -308,6 +309,12 @@ export const persianDrawerFilterGroups: DrawerFilterGroup[] = [
 ];
 
 export const persianLabels = {
+  previousMonth: 'ماه قبل',
+  nextMonth: 'ماه بعد',
+  requiredField: 'تکمیل این فیلد الزامی است',
+  invalidRange: 'بازه معتبر وارد کنید',
+  invalidValue: 'مقدار معتبر وارد کنید',
+  filteredItemCount: (count: number) => `${count} نتیجه`,
   search: 'جستجو',
   sortNewest: 'جدیدترین',
   sortOldest: 'قدیمی‌ترین',

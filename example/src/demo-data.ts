@@ -28,6 +28,7 @@ export type DemoRecord = {
   tags: string[];
   amount: number;
   createdAt: string;
+  updatedAt: string;
 };
 
 export type DemoFilters = {
@@ -39,6 +40,7 @@ export type DemoFilters = {
   tags?: string[];
   amount?: { min?: number; max?: number };
   createdAt?: string;
+  updatedAt?: string;
   createdRange?: { from?: string; to?: string };
 };
 
@@ -98,7 +100,8 @@ export const demoRecords: DemoRecord[] = Array.from(
       priority: id % 3 === 0 ? 'high' : id % 2 === 0 ? 'normal' : 'low',
       tags: buildTags(id),
       amount: 25 + id * 13,
-      createdAt: `2025/${String((id % 12) + 1).padStart(2, '0')}/${String((id % 28) + 1).padStart(2, '0')}`,
+      createdAt: `2026-${String((id % 12) + 1).padStart(2, '0')}-${String((id % 28) + 1).padStart(2, '0')}`,
+      updatedAt: `2026-${String((id % 12) + 1).padStart(2, '0')}-${String((id % 28) + 1).padStart(2, '0')}`,
     };
   },
 );
@@ -150,6 +153,10 @@ export const filterDemoRecords = (
 
   if (filters.amount?.max !== undefined) {
     result = result.filter((item) => item.amount <= filters.amount!.max!);
+  }
+
+  if (filters.updatedAt) {
+    result = result.filter((item) => item.updatedAt === filters.updatedAt);
   }
 
   if (filters.createdAt) {

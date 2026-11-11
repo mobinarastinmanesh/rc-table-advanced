@@ -4,13 +4,10 @@ export const isEmptyFilterValue = (value: unknown): boolean =>
   value === undefined ||
   value === null ||
   value === '' ||
-  (Array.isArray(value) && value.length === 0) ||
+  (Array.isArray(value) && value.every(isEmptyFilterValue)) ||
   (typeof value === 'object' &&
     value !== null &&
-    !Array.isArray(value) &&
-    Object.values(value).every(
-      (item) => item === undefined || item === null || item === '',
-    ));
+    Object.values(value).every(isEmptyFilterValue));
 
 export const isPreservedFilterKey = (key: string): boolean =>
   key === 'page' ||
@@ -45,5 +42,11 @@ export const clearUserFilters = <T extends BaseFiltersState>(
   return { ...(initial ?? {}), ...preserved } as T;
 };
 
-export const serializeFilters = <T extends BaseFiltersState>(filters: T): string =>
-  JSON.stringify(filters);
+export const serializeFilters = <T extends BaseFiltersState>(
+  filters: T,
+): string =>
+  JSON.stringify(
+    Object.fromEntries(
+      Object.entries(filters).sort(([a], [b]) => a.localeCompare(b)),
+    ),
+  );

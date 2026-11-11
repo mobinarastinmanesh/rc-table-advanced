@@ -1,4 +1,10 @@
-import { useCallback, useLayoutEffect, useState, type RefObject } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  type RefObject,
+} from 'react';
 
 export type DropdownPlacement = 'top' | 'bottom';
 
@@ -8,6 +14,9 @@ export type DropdownCoords = {
   width: number;
   maxHeight: number;
 };
+
+const useIsomorphicLayoutEffect =
+  typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 const MENU_GAP = 6;
 const VIEWPORT_PADDING = 8;
@@ -34,10 +43,14 @@ export const useDropdownPlacement = (
     const menuHeight = menuRef.current?.offsetHeight ?? DEFAULT_MAX_HEIGHT;
     const spaceBelow = window.innerHeight - rect.bottom - VIEWPORT_PADDING;
     const spaceAbove = rect.top - VIEWPORT_PADDING;
-    const openUp = spaceBelow < Math.min(menuHeight, 160) && spaceAbove > spaceBelow;
+    const openUp =
+      spaceBelow < Math.min(menuHeight, 160) && spaceAbove > spaceBelow;
     const nextPlacement: DropdownPlacement = openUp ? 'top' : 'bottom';
     const available = openUp ? spaceAbove : spaceBelow;
-    const maxHeight = Math.max(120, Math.min(DEFAULT_MAX_HEIGHT, available - MENU_GAP));
+    const maxHeight = Math.max(
+      120,
+      Math.min(DEFAULT_MAX_HEIGHT, available - MENU_GAP),
+    );
 
     setPlacement((current) =>
       current === nextPlacement ? current : nextPlacement,
@@ -62,7 +75,7 @@ export const useDropdownPlacement = (
     });
   }, [menuRef, triggerRef]);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!open) return;
 
     updatePosition();

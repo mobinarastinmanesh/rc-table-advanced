@@ -1,5 +1,6 @@
-import type { ColumnType, TableProps as RcTableProps } from 'rc-table';
-import type { GetRowKey } from 'rc-table/lib/interface';
+import type { ColumnType } from 'rc-table/lib/interface.js';
+import type { TableProps as RcTableProps } from 'rc-table/lib/Table.js';
+import type { GetRowKey } from 'rc-table/lib/interface.js';
 import type { JSX, ReactNode } from 'react';
 import type { AdvancedTableClassNames } from './table.class-names';
 import type { TableDirection } from './table.direction';
@@ -65,8 +66,10 @@ export interface TableChange {
   pagination: PaginationState;
 }
 
-export interface AdvancedTableBaseProps<RecordType>
-  extends Omit<RcTableProps<RecordType>, 'columns' | 'emptyText' | 'rowKey'> {
+export interface AdvancedTableBaseProps<RecordType> extends Omit<
+  RcTableProps<RecordType>,
+  'columns' | 'emptyText' | 'rowKey'
+> {
   columns: ColumnType<RecordType>[];
   rowKey?: string | keyof RecordType | GetRowKey<RecordType>;
   pagination?: PaginationConfig;
@@ -84,14 +87,16 @@ export interface AdvancedTableBaseProps<RecordType>
   dir?: TableDirection;
 }
 
-export interface TableViewProps<RecordType>
-  extends AdvancedTableBaseProps<RecordType> {
+export interface TableViewProps<
+  RecordType,
+> extends AdvancedTableBaseProps<RecordType> {
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
 }
 
-export interface TableWrapProps<RecordType>
-  extends AdvancedTableBaseProps<RecordType> {
+export interface TableWrapProps<
+  RecordType,
+> extends AdvancedTableBaseProps<RecordType> {
   renderItem: (props: TableViewProps<RecordType>) => JSX.Element | null;
 }
 

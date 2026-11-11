@@ -13,7 +13,7 @@ export default defineConfig(({ command, mode }) => ({
     dedupe: ['react', 'react-dom'],
     alias:
       command === 'serve'
-        ? { 'rc-table-advanced': resolve(__dirname, '../src/index.ts') }
+        ? { 'rc-table-advanced': resolve(import.meta.dirname, '../src/index.ts') }
         : undefined,
   },
   optimizeDeps: {

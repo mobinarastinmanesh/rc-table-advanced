@@ -1,7 +1,14 @@
+import { TableDirectionProvider } from './table.direction';
+import { ErrorRendererContext } from './components/table-cell/error-renderer.context';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import Table from 'rc-table';
-import type { DefaultRecordType } from 'rc-table/es/interface';
+import RcTableImport from 'rc-table';
+
+// Native Node ESM exposes the CommonJS namespace, bundlers expose its default.
+const Table: typeof RcTableImport =
+  (RcTableImport as unknown as { default?: typeof RcTableImport }).default ??
+  RcTableImport;
+import type { DefaultRecordType } from 'rc-table/lib/interface.js';
 import { Dropdown } from './components/ui/dropdown';
 import { DEFAULT_PAGE_SIZE_OPTIONS } from './table.constants';
 import type { TableViewProps } from './table.type';
@@ -17,7 +24,7 @@ const TableView = <RecordType extends DefaultRecordType>({
   onPageChange,
   onPageSizeChange,
   classNames,
-  className: _rootClassName,
+  className,
   dir = 'ltr',
   ...props
 }: TableViewProps<RecordType>) => {
@@ -35,7 +42,7 @@ const TableView = <RecordType extends DefaultRecordType>({
   const resolvedEmptyText = emptyText ?? labels.emptyText;
   const totalPages =
     pagination?.totalPages ??
-    (pagination?.total
+    (pagination?.total !== undefined
       ? Math.max(1, Math.ceil(pagination.total / pagination.pageSize))
       : undefined);
   const hasPrev = pagination
@@ -89,34 +96,44 @@ const TableView = <RecordType extends DefaultRecordType>({
   const emptyNode = slots?.empty ?? resolvedEmptyText;
 
   return (
-    <div
-      className={clsx(
-        'rcta-table',
-        dir === 'rtl' && 'rcta-table--rtl',
-        classNames?.tableWrapper,
-      )}
-      dir={dir}
-    >
-      {loading ? (
-        <div
-          className={clsx('rcta-loading', classNames?.tableLoading)}
-          role="status"
-        >
-          {slots?.loading ?? labels.loading}
-        </div>
-      ) : null}
-      <Table<RecordType>
-        columns={resolvedColumns}
-        data={data}
-        emptyText={emptyNode}
-        scroll={{ x: scroll?.x ?? 'max-content', y: scroll?.y }}
-        {...rest}
-      />
-      {slots?.footer}
-      {slots?.renderPagination && pagination
-        ? slots.renderPagination({ pagination, onPageChange, onPageSizeChange })
-        : defaultPagination}
-    </div>
+    <TableDirectionProvider value={dir}>
+      <div
+        className={clsx(
+          'rcta-table',
+          className,
+          dir === 'rtl' && 'rcta-table--rtl',
+          classNames?.tableWrapper,
+        )}
+        dir={dir}
+        aria-busy={loading || undefined}
+      >
+        {loading ? (
+          <div
+            className={clsx('rcta-loading', classNames?.tableLoading)}
+            role="status"
+          >
+            {slots?.loading ?? labels.loading}
+          </div>
+        ) : null}
+        <ErrorRendererContext.Provider value={slots?.renderErrorCell}>
+          <Table<RecordType>
+            columns={resolvedColumns}
+            data={data}
+            emptyText={emptyNode}
+            scroll={{ x: scroll?.x ?? 'max-content', y: scroll?.y }}
+            {...rest}
+          />
+        </ErrorRendererContext.Provider>
+        {slots?.footer}
+        {slots?.renderPagination && pagination
+          ? slots.renderPagination({
+              pagination,
+              onPageChange,
+              onPageSizeChange,
+            })
+          : defaultPagination}
+      </div>
+    </TableDirectionProvider>
   );
 };
 

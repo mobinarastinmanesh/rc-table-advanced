@@ -12,7 +12,6 @@ import {
   FilterMode,
   FilterType,
   type BaseFiltersState,
-  type FilterValue,
   type FiltersProps,
   type InlineFilterSchema,
 } from './filters.types';
@@ -41,10 +40,7 @@ export type {
   InlineFilterSchema,
   SearchTrigger,
 } from './filters.types';
-export type {
-  DrawerFilterGroup,
-  DrawerFilterProps,
-} from './drawer-filter';
+export type { DrawerFilterGroup, DrawerFilterProps } from './drawer-filter';
 export type { DrawerPlacement } from '../../table.drawer-placement';
 export { resolveDrawerPlacement } from '../../table.drawer-placement';
 export type { FilterModalProps } from './filter-modal';
@@ -79,7 +75,8 @@ export { createFilterChildren, filterCreator } from './filters.creator';
 export type IBaseFiltersState = BaseFiltersState;
 
 /** @deprecated Use {@link FiltersProps} */
-export type IFilters<T extends BaseFiltersState = BaseFiltersState> = FiltersProps<T>;
+export type IFilters<T extends BaseFiltersState = BaseFiltersState> =
+  FiltersProps<T>;
 
 /** @deprecated Use {@link InlineFilterSchema} */
-export type IFilterSchema<T> = InlineFilterSchema<T>;
+export type IFilterSchema<T extends object> = InlineFilterSchema<T>;

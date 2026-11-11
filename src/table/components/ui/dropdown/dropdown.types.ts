@@ -17,4 +17,5 @@ export type DropdownProps = {
   className?: string;
   disabled?: boolean;
   id?: string;
+  portalContainer?: HTMLElement;
 };
