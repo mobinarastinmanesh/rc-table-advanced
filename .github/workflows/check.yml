@@ -6,7 +6,8 @@ permissions:
   contents: read
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     strategy:
       matrix:
         react: ['18.3.1', '19.2.4']
@@ -38,7 +39,8 @@ jobs:
       - if: matrix.react == '19.2.4'
         run: npm run test:next
       - if: matrix.react == '19.2.4'
-        run: npx playwright install --with-deps chromium
+        name: Use the hosted runner's installed Chrome
+        run: echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE=$(command -v google-chrome)" >> "$GITHUB_ENV"
       - if: matrix.react == '19.2.4'
         run: npm run test:browser
       - run: npm audit --omit=dev
