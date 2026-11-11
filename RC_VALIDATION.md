@@ -1,6 +1,6 @@
 # RC acceptance validation — 2026-11-11
 
-The published `2.0.0-rc.0` was downloaded from the public npm registry and tested in independent consumers. A reproducible WebKit keyboard-focus defect was found and fixed locally. **The fix has not been published; the current npm RC still contains that defect.** Publish a new candidate before promoting v2 to stable.
+The published `2.0.0-rc.0` was downloaded from the public npm registry and tested in independent consumers. A reproducible WebKit keyboard-focus defect was found and fixed locally. This historical report records the initial local fix before publication. Release progress and registry revalidation are recorded in `RELEASE_VALIDATION.md`; the original rc.0 artifact remains immutable.
 
 ## Published artifact
 

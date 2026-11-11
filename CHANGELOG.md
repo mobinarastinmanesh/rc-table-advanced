@@ -4,6 +4,12 @@ User-visible changes are recorded here. Version numbers follow semantic versioni
 
 ## [Unreleased]
 
+No changes recorded.
+
+## [2.0.0-rc.1] — 2026-11-11
+
+Pre-release channel: `next`. Fixes the WebKit keyboard regression found during independent RC acceptance testing.
+
 ### Fixed
 
 - Keep modal and drawer Tab navigation inside their controls in WebKit, including after calendar switching. Cycle focus explicitly rather than relying on native button tabbing, while respecting child widgets that handle Tab and dialog-owned portals.

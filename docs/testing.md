@@ -8,7 +8,7 @@ The measurements below describe this checkout, including any Unreleased changes 
 
 <!-- coverage:summary:start -->
 
-Measured from the complete source test suite for **2.0.0-rc.0**: **76 tests** across **11 files**.
+Measured from the complete source test suite for **2.0.0-rc.1**: **76 tests** across **11 files**.
 
 | Metric     | Covered / total | Coverage | Required |
 | ---------- | --------------- | -------- | -------- |
@@ -17,7 +17,7 @@ Measured from the complete source test suite for **2.0.0-rc.0**: **76 tests** ac
 | functions  | 271 / 277       | 97.83%   | 95%      |
 | lines      | 934 / 943       | 99.04%   | 95%      |
 
-Source, test and toolchain fingerprint: `4409148a9682008c`. Demo code, declaration-only files and the CSS-only entry are excluded; runtime library code is included even when unimported.
+Source, test and toolchain fingerprint: `3762781c86d4b3af`. Demo code, declaration-only files and the CSS-only entry are excluded; runtime library code is included even when unimported.
 
 <!-- coverage:summary:end -->
 
