@@ -12,6 +12,7 @@ export enum FilterType {
   CUSTOM = 'custom',
 }
 
+/** Gregorian date-only value in YYYY-MM-DD, independent of displayed calendar. */
 export type DateFilterValue = string;
 export type DateRangeFilterValue = { from?: string; to?: string };
 export type AmountFilterValue = { min?: number; max?: number };
@@ -48,8 +49,10 @@ export interface BaseFilterSchema<T extends FilterType, V = unknown> {
   }) => ReactNode;
 }
 
-export interface DatePickerFilterSchema
-  extends BaseFilterSchema<FilterType.DATE_PICKER, DateFilterValue> {
+export interface DatePickerFilterSchema extends BaseFilterSchema<
+  FilterType.DATE_PICKER,
+  DateFilterValue
+> {
   calendarSystem?: DateCalendarSystem;
   calendarSystems?: DateCalendarSystem[];
   format?: string;
@@ -95,22 +98,30 @@ export type SingleSelectOptions = {
   disabled?: boolean;
 };
 
-export interface SingleSelectFilterSchema
-  extends BaseFilterSchema<FilterType.SINGLE_SELECT, SingleSelectFilterValue> {
+export interface SingleSelectFilterSchema extends BaseFilterSchema<
+  FilterType.SINGLE_SELECT,
+  SingleSelectFilterValue
+> {
   options: (SingleSelectOptions | Option)[];
 }
 
-export interface MultiSelectFilterSchema
-  extends BaseFilterSchema<FilterType.MULTIPLE_SELECT, MultiSelectFilterValue> {
+export interface MultiSelectFilterSchema extends BaseFilterSchema<
+  FilterType.MULTIPLE_SELECT,
+  MultiSelectFilterValue
+> {
   options: Option[];
 }
 
-export interface CustomFilterSchema
-  extends Omit<BaseFilterSchema<FilterType.CUSTOM, FilterSchemaValue>, 'render'> {
-  render: NonNullable<BaseFilterSchema<FilterType.CUSTOM, FilterSchemaValue>['render']>;
+export interface CustomFilterSchema extends Omit<
+  BaseFilterSchema<FilterType.CUSTOM, FilterSchemaValue>,
+  'render'
+> {
+  render: NonNullable<
+    BaseFilterSchema<FilterType.CUSTOM, FilterSchemaValue>['render']
+  >;
 }
 
-export type FilterSchema =
+export type FilterSchema<T extends object = Record<string, unknown>> = (
   | DatePickerFilterSchema
   | DateRangeFilterSchema
   | AmountRangeFilterSchema
@@ -118,7 +129,8 @@ export type FilterSchema =
   | MultiBadgeSelectFilterSchema
   | SingleSelectFilterSchema
   | MultiSelectFilterSchema
-  | CustomFilterSchema;
+  | CustomFilterSchema
+) & { key: Extract<keyof T, string> };
 
 export type FiltersFormValues = Record<string, FilterSchemaValue>;
 

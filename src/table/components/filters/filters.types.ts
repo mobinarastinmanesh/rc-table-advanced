@@ -25,16 +25,11 @@ export type BaseFiltersState = {
   page?: number;
 } & Record<string, FilterValue | undefined>;
 
-export interface InlineFilterSchema<T> {
-  type: FilterSchema['type'];
-  options?: Option[];
-  key: string;
-  label: string;
-  defaultValue?: FilterValue;
-  text?: string;
-  isLoading?: boolean;
-  onChange?: (key: keyof T, value: FilterValue) => void;
-}
+export type InlineFilterSchema<T extends object = Record<string, unknown>> =
+  FilterSchema<T> & {
+    text?: string;
+    isLoading?: boolean;
+  };
 
 export interface FiltersProps<T extends BaseFiltersState> {
   otherFilters?: InlineFilterSchema<T>[];
@@ -53,6 +48,7 @@ export interface FiltersProps<T extends BaseFiltersState> {
   setFilters: (key: keyof T, value: FilterValue) => void;
   filters: T;
   filterModalSchema?: FilterSchema[];
+  filterChipSchema?: FilterSchema[];
   changeMode: FilterMode;
   tableKey?: string;
   /** @deprecated Use {@link searchTrigger} `'instant'` instead. */
@@ -68,13 +64,16 @@ export interface FiltersProps<T extends BaseFiltersState> {
   onOpenDrawer?: () => void;
 }
 
-export interface FiltersWrapProps<T extends BaseFiltersState>
-  extends FiltersProps<T> {
+export interface FiltersWrapProps<
+  T extends BaseFiltersState,
+> extends FiltersProps<T> {
   renderItem: (props: FiltersViewProps<T>) => ReactElement;
 }
 
-export interface FiltersViewProps<T extends BaseFiltersState>
-  extends Omit<FiltersProps<T>, 'sortOptions' | 'searchLabel'> {
+export interface FiltersViewProps<T extends BaseFiltersState> extends Omit<
+  FiltersProps<T>,
+  'sortOptions' | 'searchLabel'
+> {
   searchConfig?: SearchConfig;
   sortConfig?: SortConfig;
   defaultValue?: T;
@@ -104,6 +103,7 @@ export interface UseFilterReturn<T extends BaseFiltersState> {
   filters: T;
   setFilters: (key: keyof T, value: FilterValue) => void;
   clearFilters: () => void;
+  replaceFilters: (filters: T) => void;
 }
 
 export type FilterValue =
@@ -118,7 +118,7 @@ export type FilterValue =
 export type IBaseFiltersState = BaseFiltersState;
 
 /** @deprecated Use {@link InlineFilterSchema} */
-export type IFilterSchema<T> = InlineFilterSchema<T>;
+export type IFilterSchema<T extends object> = InlineFilterSchema<T>;
 
 /** @deprecated Use {@link FiltersProps} */
 export type IFilters<T extends BaseFiltersState> = FiltersProps<T>;

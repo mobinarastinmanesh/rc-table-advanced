@@ -1,124 +1,64 @@
-import type { BaseFiltersState, FilterValue } from './filters.types';
+import type { BaseFiltersState } from './filters.types';
+import { isEmptyFilterValue, isPreservedFilterKey } from './filters.state';
 
-const MAX_DEPTH = 2;
-
-const serializeUnsafe = (v: unknown, depth = 0): string => {
-  if (depth > MAX_DEPTH) {
-    return String(v ?? '');
-  }
-
-  if (Array.isArray(v)) {
-    return JSON.stringify(v.map((item) => serializeUnsafe(item, depth + 1)));
-  }
-
-  if (typeof v === 'object' && v !== null) {
-    const obj: Record<string, string> = {};
-    for (const key in v) {
-      if (Object.prototype.hasOwnProperty.call(v, key)) {
-        obj[key] = serializeUnsafe(
-          (v as Record<string, unknown>)[key],
-          depth + 1,
-        );
-      }
-    }
-    return JSON.stringify(obj);
-  }
-
-  return String(v ?? '');
-};
-
-export const serialize = (v: unknown): string => {
+const PREFIX = '~rcta1:';
+export const serialize = (value: unknown): string => {
   try {
-    return serializeUnsafe(v);
+    const json = JSON.stringify(value);
+    return json === undefined ? '' : PREFIX + json;
   } catch {
     return '';
   }
 };
 
-const numberRegex = /^-?\d+(?:\.\d+)?$/;
-
-export const deserialize = (s: string): unknown => {
-  if (typeof s !== 'string') return s;
-
-  if (s.startsWith('{') || s.startsWith('[')) {
+/** Reads versioned values and legacy v1 links. Only legacy values infer types. */
+export const deserialize = (value: string): unknown => {
+  if (value.startsWith(PREFIX)) {
     try {
-      const parsed = JSON.parse(s);
-
-      if (Array.isArray(parsed)) {
+      return JSON.parse(value.slice(PREFIX.length));
+    } catch {
+      return value;
+    }
+  }
+  if (value.startsWith('{') || value.startsWith('[')) {
+    try {
+      const parsed: unknown = JSON.parse(value);
+      if (Array.isArray(parsed))
         return parsed.map((item) =>
           typeof item === 'string' ? deserialize(item) : item,
         );
+      if (parsed && typeof parsed === 'object') {
+        return Object.fromEntries(
+          Object.entries(parsed).map(([key, item]) => [
+            key,
+            typeof item === 'string' ? deserialize(item) : item,
+          ]),
+        );
       }
-
-      if (typeof parsed === 'object' && parsed !== null) {
-        const obj: Record<string, unknown> = {};
-        for (const key in parsed) {
-          if (Object.prototype.hasOwnProperty.call(parsed, key)) {
-            const val = parsed[key];
-            obj[key] = typeof val === 'string' ? deserialize(val) : val;
-          }
-        }
-        return obj;
-      }
-
       return parsed;
     } catch {
-      return s;
+      return value;
     }
   }
-
-  if (s.includes(',')) {
-    return s.split(',').map((v) => v.trim());
-  }
-
-  if (numberRegex.test(s)) {
-    return Number(s);
-  }
-
-  return s;
+  if (value.includes(',')) return value.split(',').map((item) => item.trim());
+  if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
+  return value;
 };
 
 export const calculateFilterCounts = <T extends BaseFiltersState>(
   filters: T,
-  tableKey: string,
+  tableKey = '',
 ): number => {
   const prefix = tableKey ? `${tableKey}_` : '';
-  return Object.entries(filters).reduce(
-    (count: number, [key, value]: [string, FilterValue]) => {
-      const hasValue =
-        (prefix ? key.includes(prefix) : true) &&
-        key !== `${prefix}page` &&
-        key !== `${prefix}sort` &&
-        key !== `${prefix}sortType` &&
-        key !== `${prefix}pageSize` &&
-        key !== `${prefix}hasError` &&
-        value !== undefined &&
-        value !== null &&
-        value !== '';
-      return count + (hasValue ? 1 : 0);
-    },
-    0,
-  );
+  return Object.entries(filters).filter(
+    ([key, value]) =>
+      (!prefix || key.startsWith(prefix)) &&
+      !isPreservedFilterKey(key) &&
+      key !== `${prefix}sortType` &&
+      key !== `${prefix}hasError` &&
+      !isEmptyFilterValue(value),
+  ).length;
 };
-
-export const hasAnyFilters = <T extends BaseFiltersState>(filters: T): boolean =>
-  Object.entries(filters).some(([key, value]: [string, FilterValue]) => {
-    const isExcludedKey =
-      key.endsWith('_page') ||
-      key.endsWith('_sort') ||
-      key.endsWith('_pageSize') ||
-      key === 'page' ||
-      key === 'sort' ||
-      key === 'pageSize';
-
-    if (isExcludedKey) {
-      return false;
-    }
-
-    return (
-      value !== undefined &&
-      value !== null &&
-      value !== '' &&
-      !(Array.isArray(value) && value.length === 0)
-    );
-  });
+export const hasAnyFilters = <T extends BaseFiltersState>(
+  filters: T,
+): boolean => calculateFilterCounts(filters) > 0;

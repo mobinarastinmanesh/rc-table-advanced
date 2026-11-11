@@ -1,4 +1,4 @@
-import type { DefaultRecordType } from 'rc-table/es/interface';
+import type { DefaultRecordType } from 'rc-table/lib/interface.js';
 import type { AdvancedTableBaseProps } from './table.type';
 import TableWrap from './table.wrap';
 import TableView from './table.view';

@@ -1,8 +1,8 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import type { DatePickerRef } from 'react-multi-date-picker';
-import './date-picker.css';
 import { DATE_FORMAT, getCalendarSystemConfig } from './date-picker.constants';
 import { MultiDatePicker } from './multi-date-picker';
+import { useTableLabels } from '../../../../table.labels';
 import { useTableDirection } from '../../../../table.direction';
 import type { DatePickerProps } from './date-picker.types';
 
@@ -21,6 +21,7 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
   ) => {
     const internalRef = useRef<DatePickerRef>(null);
     const dir = useTableDirection();
+    const labels = useTableLabels();
     const isRtl = dir === 'rtl';
     const calendarConfig = getCalendarSystemConfig(calendarSystem, dir);
     const resolvedPosition =
@@ -59,7 +60,9 @@ const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(
         offsetY={offsetY}
         renderButton={(direction: string, handleClick: () => void) => (
           <button
-            aria-label={direction === 'left' ? 'Previous month' : 'Next month'}
+            aria-label={
+              direction === 'left' ? labels.previousMonth : labels.nextMonth
+            }
             className="rcta-icon-button"
             type="button"
             onClick={handleClick}

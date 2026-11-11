@@ -8,7 +8,7 @@ import {
   type PaginationState,
   type TableColumnType,
 } from 'rc-table-advanced';
-import type { AdvancedTableClassNames } from '../../src/table/table.class-names';
+import type { AdvancedTableClassNames } from 'rc-table-advanced';
 import {
   drawerFilterGroups,
   filterModalSchema,
@@ -122,8 +122,8 @@ export type DemoTableSectionProps = {
   labels?: Partial<AdvancedTableLabels>;
   dir?: 'rtl' | 'ltr';
   columns?: TableColumnType<DemoRecord>[];
-  filterModalSchema?: FilterSchema[];
-  drawerFilterGroups?: DrawerFilterGroup[];
+  filterModalSchema?: FilterSchema<DemoFilters>[];
+  drawerFilterGroups?: DrawerFilterGroup<DemoFilters>[];
 };
 
 export function DemoTableSection({
@@ -188,14 +188,9 @@ export function DemoTableSection({
         searchDebounceMs={400}
         rowKey="id"
         showSizeChanger
-        onFiltersChange={(nextFilters) => {
-          setFilters(nextFilters);
-          setPagination((current) => ({ ...current, page: 1 }));
-        }}
+        onFiltersChange={setFilters}
         onChange={(change) => {
-          if ('paginationChanged' in change && change.paginationChanged) {
-            setPagination(change.pagination);
-          }
+          setPagination(change.pagination);
         }}
       />
     </section>

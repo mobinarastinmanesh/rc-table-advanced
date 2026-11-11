@@ -1,6 +1,7 @@
+import { readPortalTheme } from './table.portal';
 import clsx from 'clsx';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import type { DefaultRecordType } from 'rc-table/es/interface';
+import type { DefaultRecordType } from 'rc-table/lib/interface.js';
 import DrawerFilter, {
   type DrawerFilterGroup,
 } from './components/filters/drawer-filter';
@@ -21,7 +22,6 @@ import {
 } from './components/filters/filters.types';
 import type {
   FilterSchema,
-  FilterSchemaValue,
   FiltersFormValues,
 } from './components/filters/filters-schema.types';
 import { getPaginationSnapshot } from './pagination.utils';
@@ -40,6 +40,7 @@ export interface AdvancedTableChange<TFilters extends BaseFiltersState> {
   pagination: PaginationState;
   /** True when pagination changed (page / page size). */
   paginationChanged?: boolean;
+  reason: 'filter' | 'sort' | 'pagination' | 'reset';
 }
 
 const isFilterValueEmpty = isEmptyFilterValue;
@@ -70,8 +71,12 @@ export interface AdvancedTableProps<
   onFiltersChange?: (filters: TFilters) => void;
   onChange?: (change: AdvancedTableChange<TFilters>) => void;
   syncFiltersWithUrl?: boolean;
-  filterModalSchema?: FilterSchema[];
-  drawerFilterGroups?: DrawerFilterGroup[];
+  urlPrefix?: string;
+  urlFilterKeys?: string[];
+  resetPageOnFilterChange?: boolean;
+  sortOptions?: import('./components/filters/filters-schema.types').Option[];
+  filterModalSchema?: FilterSchema<TFilters>[];
+  drawerFilterGroups?: DrawerFilterGroup<TFilters>[];
   filterMode?: FilterMode;
   searchLabel?: string;
   /** @deprecated Use {@link searchTrigger} `'instant'` instead. */
@@ -102,6 +107,10 @@ const AdvancedTable = <
   onFiltersChange,
   onChange,
   syncFiltersWithUrl = false,
+  urlPrefix = 'rcta_',
+  urlFilterKeys = [],
+  resetPageOnFilterChange = true,
+  sortOptions: sortOptionsProp,
   filterModalSchema = [],
   drawerFilterGroups = [],
   filterMode = FilterMode.ON_CHANGE,
@@ -119,23 +128,46 @@ const AdvancedTable = <
   classNames,
   ...tableProps
 }: AdvancedTableProps<RecordType, TFilters>) => {
+  const rootRef = useRef<HTMLDivElement>(null);
   const labels = useMemo(() => mergeLabels(labelsProp), [labelsProp]);
   const searchTrigger = resolveSearchTrigger(searchTriggerProp, realTimeSearch);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const isControlled = controlledFilters !== undefined;
 
   const queryControl = useQueryControl<TFilters>(initialFilters, {
     syncUrl: syncFiltersWithUrl,
+    value: controlledFilters,
+    onChange: onFiltersChange,
+    prefix: urlPrefix,
+    schema: [
+      ...filterModalSchema,
+      ...drawerFilterGroups.flatMap((group) => group.schema),
+    ],
+    keys: [
+      'query',
+      'sort',
+      'page',
+      'pageSize',
+      ...urlFilterKeys,
+      ...Object.keys(initialFilters ?? {}),
+      ...Object.keys(controlledFilters ?? {}),
+      ...filterModalSchema.map((item) => item.key),
+      ...drawerFilterGroups.flatMap((group) =>
+        group.schema.map((item) => item.key),
+      ),
+    ],
   });
 
-  const filters = controlledFilters ?? queryControl.filters;
+  const filters = queryControl.filters;
   const paginationRef = useRef(pagination);
   paginationRef.current = pagination;
   const lastEmittedRef = useRef<string>(serializeFilters(filters));
 
   const emitChange = useCallback(
-    (nextFilters: TFilters) => {
+    (
+      nextFilters: TFilters,
+      reason: AdvancedTableChange<TFilters>['reason'] = 'filter',
+    ) => {
       const serialized = serializeFilters(nextFilters);
       if (serialized === lastEmittedRef.current) {
         return;
@@ -144,66 +176,63 @@ const AdvancedTable = <
       lastEmittedRef.current = serialized;
       onChange?.({
         filters: nextFilters,
-        pagination: getPaginationSnapshot(paginationRef.current),
+        reason,
+        pagination: {
+          ...getPaginationSnapshot(paginationRef.current),
+          ...(resetPageOnFilterChange ? { page: 1 } : {}),
+        },
       });
     },
-    [onChange],
+    [onChange, resetPageOnFilterChange],
   );
 
+  const pendingReason =
+    useRef<AdvancedTableChange<TFilters>['reason']>('filter');
   const applyFilter = useCallback(() => {
-    emitChange(filters);
+    emitChange(filters, pendingReason.current);
   }, [emitChange, filters]);
 
   const setFilters = useCallback(
     (key: keyof TFilters, value: FilterValue) => {
+      pendingReason.current = key === 'sort' ? 'sort' : 'filter';
       const next = buildNextFilters(filters, key, value);
 
-      if (!isControlled) {
-        queryControl.setFilters(key, value);
-      }
-
-      onFiltersChange?.(next);
+      queryControl.replaceFilters(next);
 
       if (filterMode === FilterMode.ON_CHANGE) {
-        emitChange(next);
+        emitChange(next, key === 'sort' ? 'sort' : 'filter');
       }
     },
-    [emitChange, filterMode, filters, isControlled, onFiltersChange, queryControl],
+    [emitChange, filterMode, filters, queryControl],
   );
 
   const clearFilters = useCallback(() => {
+    pendingReason.current = 'reset';
     const next = clearUserFilters(filters, initialFilters);
 
-    if (!isControlled) {
-      queryControl.clearFilters();
-    }
-
-    onFiltersChange?.(next);
+    queryControl.replaceFilters(next);
 
     if (filterMode === FilterMode.ON_CHANGE) {
-      emitChange(next);
+      emitChange(next, 'reset');
     }
-  }, [
-    emitChange,
-    filterMode,
-    filters,
-    initialFilters,
-    isControlled,
-    onFiltersChange,
-    queryControl,
-  ]);
+  }, [emitChange, filterMode, filters, initialFilters, queryControl]);
 
   const modalValues = useMemo(
     () =>
       filterModalSchema.reduce<FiltersFormValues>((acc, item) => {
-        acc[item.key] = filters[item.key as keyof TFilters] as FiltersFormValues[string];
+        acc[item.key] = filters[
+          item.key as keyof TFilters
+        ] as FiltersFormValues[string];
         return acc;
       }, {}),
     [filterModalSchema, filters],
   );
 
   const drawerSchemaKeys = useMemo(
-    () => drawerFilterGroups.flatMap((group) => group.schema.map((item) => item.key)),
+    () =>
+      drawerFilterGroups.flatMap((group) =>
+        group.schema.map((item) => item.key),
+      ),
     [drawerFilterGroups],
   );
 
@@ -226,24 +255,18 @@ const AdvancedTable = <
 
         if (isFilterValueEmpty(value)) {
           delete next[fieldKey];
-          if (!isControlled) {
-            queryControl.setFilters(fieldKey, undefined);
-          }
           return;
         }
 
         next = { ...next, [fieldKey]: value } as TFilters;
-        if (!isControlled) {
-          queryControl.setFilters(fieldKey, value as FilterValue);
-        }
       });
 
-      onFiltersChange?.(next);
+      queryControl.replaceFilters(next);
       emitChange(next);
       setIsModalOpen(false);
       setIsDrawerOpen(false);
     },
-    [emitChange, filters, isControlled, onFiltersChange, queryControl],
+    [emitChange, filters, queryControl],
   );
 
   const applyModalValues = useCallback(
@@ -256,6 +279,9 @@ const AdvancedTable = <
     [applySchemaValues, filterModalSchema],
   );
 
+  const portalTheme =
+    isModalOpen || isDrawerOpen ? readPortalTheme(rootRef.current) : undefined;
+
   const applyDrawerValues = useCallback(
     (values: FiltersFormValues) => {
       applySchemaValues(values, drawerSchemaKeys);
@@ -263,7 +289,7 @@ const AdvancedTable = <
     [applySchemaValues, drawerSchemaKeys],
   );
 
-  const sortOptions = useMemo(
+  const defaultSortOptions = useMemo(
     () => [
       { value: 'newest', label: labels.sortNewest },
       { value: 'oldest', label: labels.sortOldest },
@@ -275,70 +301,83 @@ const AdvancedTable = <
     <TableDirectionProvider value={dir}>
       <LabelsProvider value={labels}>
         <div
+          ref={rootRef}
           className={clsx('rcta-advanced-table', classNames?.root, className)}
           dir={dir}
         >
-      <Filters<TFilters>
-        applyFilter={applyFilter}
-        changeMode={filterMode}
-        classNames={classNames}
-        clearFilters={clearFilters}
-        dir={dir}
-        filterModalSchema={filterModalSchema}
-        filters={filters}
-        hasSearch={hasSearch}
-        hasSort={hasSort}
-        realTimeSearch={realTimeSearch}
-        searchDebounceMs={searchDebounceMs}
-        searchLabel={searchLabel ?? labels.search}
-        searchTrigger={searchTrigger}
-        setFilters={setFilters}
-        sortOptions={sortOptions}
-        onOpenDrawer={
-          drawerFilterGroups.length ? () => setIsDrawerOpen(true) : undefined
-        }
-        onOpenModal={
-          filterModalSchema.length ? () => setIsModalOpen(true) : undefined
-        }
-      />
-      <Table<RecordType>
-        {...tableProps}
-        classNames={classNames}
-        dir={dir}
-        emptyText={tableProps.emptyText ?? labels.emptyText}
-        pagination={pagination}
-        slots={{
-          ...tableProps.slots,
-          loading: tableProps.slots?.loading ?? labels.loading,
-        }}
-        onChange={(change) =>
-          onChange?.({
-            filters,
-            pagination: change.pagination,
-            paginationChanged: true,
-          })
-        }
-      />
-      <FilterModal
-        classNames={classNames}
-        dir={dir}
-        open={isModalOpen}
-        schema={filterModalSchema}
-        values={modalValues}
-        onApply={applyModalValues}
-        onClose={() => setIsModalOpen(false)}
-      />
-      <DrawerFilter
-        classNames={classNames}
-        dir={dir}
-        placement={drawerPlacement}
-        groups={drawerFilterGroups}
-        open={isDrawerOpen}
-        values={drawerValues}
-        onApply={applyDrawerValues}
-        onClose={() => setIsDrawerOpen(false)}
-      />
-      </div>
+          <Filters<TFilters>
+            applyFilter={applyFilter}
+            changeMode={filterMode}
+            classNames={classNames}
+            clearFilters={clearFilters}
+            dir={dir}
+            filterModalSchema={filterModalSchema}
+            filterChipSchema={drawerFilterGroups.flatMap(
+              (group) => group.schema,
+            )}
+            filters={filters}
+            hasSearch={hasSearch}
+            hasSort={hasSort}
+            realTimeSearch={realTimeSearch}
+            searchDebounceMs={searchDebounceMs}
+            searchLabel={searchLabel ?? labels.search}
+            searchTrigger={searchTrigger}
+            setFilters={setFilters}
+            sortOptions={sortOptionsProp ?? defaultSortOptions}
+            onOpenDrawer={
+              drawerFilterGroups.length
+                ? () => setIsDrawerOpen(true)
+                : undefined
+            }
+            onOpenModal={
+              filterModalSchema.length ? () => setIsModalOpen(true) : undefined
+            }
+          />
+          <Table<RecordType>
+            {...tableProps}
+            classNames={classNames}
+            dir={dir}
+            emptyText={tableProps.emptyText ?? labels.emptyText}
+            pagination={pagination}
+            slots={{
+              ...tableProps.slots,
+              loading: tableProps.slots?.loading ?? labels.loading,
+            }}
+            onChange={(change) =>
+              onChange?.({
+                filters,
+                pagination: change.pagination,
+                paginationChanged: true,
+                reason: 'pagination',
+              })
+            }
+          />
+          <FilterModal
+            style={portalTheme}
+            classNames={classNames}
+            dir={dir}
+            open={isModalOpen}
+            schema={filterModalSchema}
+            values={modalValues}
+            onApply={applyModalValues}
+            onClose={() => setIsModalOpen(false)}
+          />
+          <DrawerFilter
+            style={portalTheme}
+            classNames={classNames}
+            dir={dir}
+            placement={drawerPlacement}
+            groups={drawerFilterGroups.map(({ key, title, schema }) => ({
+              key,
+              title,
+              schema,
+            }))}
+            open={isDrawerOpen}
+            values={drawerValues}
+            onApply={applyDrawerValues}
+            onClose={() => setIsDrawerOpen(false)}
+          />
+        </div>
       </LabelsProvider>
     </TableDirectionProvider>
   );

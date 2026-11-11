@@ -1,3 +1,4 @@
+import { readPortalTheme } from '../../../table.portal';
 import clsx from 'clsx';
 import {
   useCallback,
@@ -17,7 +18,10 @@ import { useTableDirection } from '../../../table.direction';
 const ChevronIcon = ({ open }: { open: boolean }) => (
   <svg
     aria-hidden
-    className={clsx('rcta-dropdown__chevron', open && 'rcta-dropdown__chevron--open')}
+    className={clsx(
+      'rcta-dropdown__chevron',
+      open && 'rcta-dropdown__chevron--open',
+    )}
     fill="none"
     height="16"
     viewBox="0 0 16 16"
@@ -58,6 +62,7 @@ const Dropdown = ({
   className,
   disabled = false,
   id,
+  portalContainer,
 }: DropdownProps) => {
   const dir = useTableDirection();
   const generatedId = useId();
@@ -163,8 +168,13 @@ const Dropdown = ({
         ? selectedValues.includes(item.value)
         : item.value === value || (!value && emptyOption?.value === item.value),
     );
-    const nextIndex = selectedIndex >= 0 ? selectedIndex : 0;
-    setHighlightIndex((current) => (current === nextIndex ? current : nextIndex));
+    const nextIndex =
+      selectedIndex >= 0 && !allOptions[selectedIndex]?.disabled
+        ? selectedIndex
+        : allOptions.findIndex((item) => !item.disabled);
+    setHighlightIndex((current) =>
+      current === nextIndex ? current : nextIndex,
+    );
   }, [allOptions, emptyOption, multiple, open, selectedValues, value]);
 
   useEffect(() => {
@@ -175,6 +185,15 @@ const Dropdown = ({
 
     return () => window.cancelAnimationFrame(frame);
   }, [open, updatePosition]);
+
+  useEffect(() => {
+    if (open && highlightIndex >= 0)
+      menuRef.current
+        ?.querySelector<HTMLElement>(
+          `[id="${listboxId}-option-${highlightIndex}"]`,
+        )
+        ?.scrollIntoView?.({ block: 'nearest' });
+  }, [open, highlightIndex, listboxId]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (disabled) return;
@@ -189,16 +208,52 @@ const Dropdown = ({
 
     if (event.key === 'Escape') {
       event.preventDefault();
+      event.stopPropagation();
       close();
       triggerRef.current?.focus();
       return;
     }
 
+    if (event.key === 'Tab') {
+      close();
+      return;
+    }
+    if (event.key === 'Home' || event.key === 'End') {
+      event.preventDefault();
+      const indices = allOptions
+        .map((item, index) => (item.disabled ? -1 : index))
+        .filter((index) => index >= 0);
+      setHighlightIndex(
+        (event.key === 'Home' ? indices[0] : indices.at(-1)) ?? -1,
+      );
+      return;
+    }
+    if (
+      event.key.length === 1 &&
+      event.key !== ' ' &&
+      !event.ctrlKey &&
+      !event.metaKey
+    ) {
+      const start = highlightIndex + 1;
+      const index = [
+        ...allOptions.slice(start),
+        ...allOptions.slice(0, start),
+      ].findIndex(
+        (item) =>
+          !item.disabled &&
+          getOptionLabel(item)
+            .toLocaleLowerCase()
+            .startsWith(event.key.toLocaleLowerCase()),
+      );
+      if (index >= 0) setHighlightIndex((index + start) % allOptions.length);
+      return;
+    }
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       setHighlightIndex((current) => {
         let next = current + 1;
-        while (next < allOptions.length && allOptions[next]?.disabled) next += 1;
+        while (next < allOptions.length && allOptions[next]?.disabled)
+          next += 1;
         return next >= allOptions.length ? current : next;
       });
       return;
@@ -233,10 +288,17 @@ const Dropdown = ({
             dir={dir}
             id={`${listboxId}-listbox`}
             role="listbox"
+            aria-label={ariaLabel ?? placeholder}
+            data-rcta-portal-owner={
+              triggerRef.current
+                ?.closest('[data-rcta-dialog-panel]')
+                ?.getAttribute('data-rcta-dialog-panel') ?? undefined
+            }
             aria-multiselectable={multiple || undefined}
             onMouseDown={(event) => event.stopPropagation()}
             onClick={(event) => event.stopPropagation()}
             style={{
+              ...readPortalTheme(triggerRef.current),
               left: coords.left,
               top: coords.top,
               width: coords.width,
@@ -254,7 +316,10 @@ const Dropdown = ({
                 const isHighlighted = index === highlightIndex;
 
                 return (
-                  <li key={`${option.value || '__empty'}-${index}`} role="presentation">
+                  <li
+                    key={`${option.value || '__empty'}-${index}`}
+                    role="presentation"
+                  >
                     <button
                       className={clsx(
                         'rcta-dropdown__option',
@@ -263,6 +328,8 @@ const Dropdown = ({
                       )}
                       disabled={option.disabled}
                       role="option"
+                      id={`${listboxId}-option-${index}`}
+                      tabIndex={-1}
                       aria-selected={isSelected}
                       type="button"
                       onMouseEnter={() => setHighlightIndex(index)}
@@ -282,7 +349,7 @@ const Dropdown = ({
               })}
             </ul>
           </div>,
-          document.body,
+          portalContainer ?? document.body,
         )
       : null;
 
@@ -291,12 +358,21 @@ const Dropdown = ({
       <button
         ref={triggerRef}
         aria-expanded={open}
+        role="combobox"
         aria-haspopup="listbox"
+        aria-controls={open ? `${listboxId}-listbox` : undefined}
+        aria-activedescendant={
+          open && highlightIndex >= 0
+            ? `${listboxId}-option-${highlightIndex}`
+            : undefined
+        }
         aria-label={ariaLabel}
         className={clsx(
           'rcta-dropdown__trigger',
           open && 'rcta-dropdown__trigger--open',
-          !selectedValues.length && !value && 'rcta-dropdown__trigger--placeholder',
+          !selectedValues.length &&
+            !value &&
+            'rcta-dropdown__trigger--placeholder',
         )}
         dir={dir}
         disabled={disabled}

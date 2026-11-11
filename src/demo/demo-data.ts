@@ -46,26 +46,29 @@ const buildTags = (id: number): string[] => {
   return tags;
 };
 
-export const demoRecords: DemoRecord[] = Array.from({ length: 42 }, (_, index) => {
-  const id = index + 1;
-  const isInvalid = id % 9 === 2;
+export const demoRecords: DemoRecord[] = Array.from(
+  { length: 42 },
+  (_, index) => {
+    const id = index + 1;
+    const isInvalid = id % 9 === 2;
 
-  return {
-    id,
-    name: {
-      value: isInvalid
-        ? `Invalid receiver ${id}`
-        : receiverNames[index % receiverNames.length],
-      isValid: !isInvalid,
-      message: isInvalid ? 'Receiver name is incomplete' : undefined,
-    },
-    status: id % 3 === 0 ? 'draft' : 'paid',
-    priority: id % 3 === 0 ? 'high' : id % 2 === 0 ? 'normal' : 'low',
-    tags: buildTags(id),
-    amount: 25 + id * 13,
-    createdAt: `2025/${String((id % 12) + 1).padStart(2, '0')}/${String((id % 28) + 1).padStart(2, '0')}`,
-  };
-});
+    return {
+      id,
+      name: {
+        value: isInvalid
+          ? `Invalid receiver ${id}`
+          : receiverNames[index % receiverNames.length],
+        isValid: !isInvalid,
+        message: isInvalid ? 'Receiver name is incomplete' : undefined,
+      },
+      status: id % 3 === 0 ? 'draft' : 'paid',
+      priority: id % 3 === 0 ? 'high' : id % 2 === 0 ? 'normal' : 'low',
+      tags: buildTags(id),
+      amount: 25 + id * 13,
+      createdAt: `2025/${String((id % 12) + 1).padStart(2, '0')}/${String((id % 28) + 1).padStart(2, '0')}`,
+    };
+  },
+);
 
 export const filterDemoRecords = (
   data: DemoRecord[],

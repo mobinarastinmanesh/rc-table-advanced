@@ -15,6 +15,8 @@ export const useDialogA11y = ({
   closeOnBackdrop = true,
 }: UseDialogA11yOptions) => {
   const titleId = useId();
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const panelRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -29,16 +31,31 @@ export const useDialogA11y = ({
     const focusFirst = () => {
       const panel = panelRef.current;
       if (!panel) return;
-      const focusable = panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+      const focusable = Array.from(
+        panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      ).filter(
+        (node) => node.tabIndex >= 0 && node.getClientRects().length > 0,
+      );
       (focusable[0] ?? panel).focus();
     };
 
     const frame = window.requestAnimationFrame(focusFirst);
+    const panel = panelRef.current;
+    const siblings = Array.from(document.body.children).filter(
+      (node): node is HTMLElement =>
+        node instanceof HTMLElement && !node.contains(panel),
+    );
+    const inertValues = siblings.map((node) => node.inert);
+    siblings.forEach((node) => {
+      node.inert = true;
+    });
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -49,7 +66,12 @@ export const useDialogA11y = ({
 
       const focusable = Array.from(
         panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
-      ).filter((node) => node.offsetParent !== null);
+      ).filter(
+        (node) =>
+          node.tabIndex >= 0 &&
+          !node.closest('[hidden]') &&
+          node.getClientRects().length > 0,
+      );
 
       if (!focusable.length) {
         event.preventDefault();
@@ -59,6 +81,16 @@ export const useDialogA11y = ({
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
       const active = document.activeElement;
+      const inOwnedPortal =
+        active instanceof HTMLElement &&
+        active
+          .closest('[data-rcta-portal-owner]')
+          ?.getAttribute('data-rcta-portal-owner') === titleId;
+      if (!panel.contains(active) && !inOwnedPortal) {
+        event.preventDefault();
+        first.focus();
+        return;
+      }
 
       if (event.shiftKey && active === first) {
         event.preventDefault();
@@ -74,9 +106,13 @@ export const useDialogA11y = ({
     return () => {
       window.cancelAnimationFrame(frame);
       document.removeEventListener('keydown', handleKeyDown);
+      siblings.forEach((node, index) => {
+        node.inert = inertValues[index];
+      });
+      document.body.style.overflow = previousOverflow;
       previousFocusRef.current?.focus();
     };
-  }, [open, onClose]);
+  }, [open, titleId]);
 
   const handleBackdropClick = () => {
     if (closeOnBackdrop) onClose();

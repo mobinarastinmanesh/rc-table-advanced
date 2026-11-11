@@ -4,9 +4,9 @@
     "outDir": "types",
     "declaration": true,
     "emitDeclarationOnly": true,
-    "declarationMap": true,
+    "declarationMap": false,
     "stripInternal": true
   },
-  "include": ["src/index.ts", "src/vite-env.d.ts"],
+  "include": ["src/index.ts", "src/core.ts", "src/vite-env.d.ts"],
   "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
 }

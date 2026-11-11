@@ -1,6 +1,12 @@
 import { createContext, useContext } from 'react';
 
 export type AdvancedTableLabels = {
+  previousMonth: string;
+  nextMonth: string;
+  requiredField: string;
+  invalidRange: string;
+  invalidValue: string;
+  filteredItemCount: (count: number) => string;
   search: string;
   sortNewest: string;
   sortOldest: string;
@@ -39,6 +45,12 @@ export type AdvancedTableLabels = {
 };
 
 export const DEFAULT_LABELS: AdvancedTableLabels = {
+  previousMonth: 'Previous month',
+  nextMonth: 'Next month',
+  requiredField: 'This field is required',
+  invalidRange: 'Enter a valid range',
+  invalidValue: 'Enter a valid value',
+  filteredItemCount: (count) => `${count} results`,
   search: 'Search',
   sortNewest: 'Newest',
   sortOldest: 'Oldest',

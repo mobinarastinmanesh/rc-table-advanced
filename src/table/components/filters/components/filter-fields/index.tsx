@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import { useState } from 'react';
+import { toCanonicalDate, toDisplayDate } from '../date-picker/date-value';
+import { useId, useState } from 'react';
 import type { DateObject } from 'react-multi-date-picker';
 import { Dropdown } from '../../../ui/dropdown';
 import DatePicker from '../date-picker/date-picker';
@@ -78,25 +79,25 @@ export const SingleSelectFilter = ({
   const labels = useTableLabels();
 
   return (
-  <div className="rcta-field">
-    <span className="rcta-field__label">{schema.label}</span>
-    <Dropdown
-      ariaLabel={schema.label}
-      emptyOption={{ value: '', label: labels.selectAll }}
-      options={schema.options.map((option) => ({
-        value: option.value,
-        label: toOptionLabel(option),
-        disabled: option.disabled,
-        title: 'title' in option ? option.title : undefined,
-      }))}
-      placeholder={labels.selectAll}
-      value={value}
-      onChange={(next) => {
-        if (typeof next === 'string' && next) onChange(next);
-        else onChange(undefined);
-      }}
-    />
-  </div>
+    <div className="rcta-field">
+      <span className="rcta-field__label">{schema.label}</span>
+      <Dropdown
+        ariaLabel={schema.label}
+        emptyOption={{ value: '', label: labels.selectAll }}
+        options={schema.options.map((option) => ({
+          value: option.value,
+          label: toOptionLabel(option),
+          disabled: option.disabled,
+          title: 'title' in option ? option.title : undefined,
+        }))}
+        placeholder={labels.selectAll}
+        value={value}
+        onChange={(next) => {
+          if (typeof next === 'string' && next) onChange(next);
+          else onChange(undefined);
+        }}
+      />
+    </div>
   );
 };
 
@@ -134,17 +135,26 @@ export const SingleBadgeSelectFilter = ({
   schema,
   value,
   onChange,
-}: FilterFieldProps<SingleBadgeSelectFilterSchema, SingleSelectFilterValue>) => (
+}: FilterFieldProps<
+  SingleBadgeSelectFilterSchema,
+  SingleSelectFilterValue
+>) => (
   <fieldset className="rcta-field">
     <legend>{schema.label}</legend>
     <div className="rcta-badge-list">
       {schema.options.map((option) => (
         <button
           key={option.value}
-          className={clsx('rcta-chip', value === option.value && 'rcta-chip--selected')}
+          className={clsx(
+            'rcta-chip',
+            value === option.value && 'rcta-chip--selected',
+          )}
           disabled={option.disabled}
+          aria-pressed={value === option.value}
           type="button"
-          onClick={() => onChange(value === option.value ? undefined : option.value)}
+          onClick={() =>
+            onChange(value === option.value ? undefined : option.value)
+          }
         >
           {option.label}
         </button>
@@ -171,6 +181,7 @@ export const MultipleBadgeSelectFilter = ({
               key={option.value}
               className={clsx('rcta-chip', isSelected && 'rcta-chip--selected')}
               disabled={option.disabled}
+              aria-pressed={isSelected}
               type="button"
               onClick={() => {
                 const next = isSelected
@@ -193,6 +204,7 @@ export const DatePickerFilter = ({
   value,
   onChange,
 }: FilterFieldProps<DatePickerFilterSchema, DateFilterValue>) => {
+  const inputId = useId();
   const calendarSystems = getCalendarSystems(schema);
   const [calendarSystem, setCalendarSystem] = useState<DateCalendarSystem>(
     schema.calendarSystem ?? calendarSystems[0],
@@ -201,7 +213,9 @@ export const DatePickerFilter = ({
 
   return (
     <fieldset className="rcta-field">
-      <legend>{schema.label}</legend>
+      <legend>
+        <label htmlFor={inputId}>{schema.label}</label>
+      </legend>
       <CalendarSystemSelect
         label={schema.label}
         options={calendarSystems}
@@ -209,10 +223,11 @@ export const DatePickerFilter = ({
         onChange={setCalendarSystem}
       />
       <DatePicker
+        id={inputId}
         key={calendarSystem}
         calendarSystem={calendarSystem}
         format={format}
-        value={value || undefined}
+        value={toDisplayDate(value, calendarSystem)}
         onChange={(selected) => {
           if (selected == null) {
             onChange(undefined);
@@ -223,7 +238,7 @@ export const DatePickerFilter = ({
             onChange(undefined);
             return;
           }
-          onChange((date as DateObject).format(format));
+          onChange(toCanonicalDate(date as DateObject));
         }}
       />
     </fieldset>
@@ -235,6 +250,7 @@ export const DateRangePickerFilter = ({
   value,
   onChange,
 }: FilterFieldProps<DateRangeFilterSchema, DateRangeFilterValue>) => {
+  const inputId = useId();
   const calendarSystems = getCalendarSystems(schema);
   const [calendarSystem, setCalendarSystem] = useState<DateCalendarSystem>(
     schema.calendarSystem ?? calendarSystems[0],
@@ -243,7 +259,9 @@ export const DateRangePickerFilter = ({
 
   return (
     <fieldset className="rcta-field">
-      <legend>{schema.label}</legend>
+      <legend>
+        <label htmlFor={inputId}>{schema.label}</label>
+      </legend>
       <CalendarSystemSelect
         label={schema.label}
         options={calendarSystems}
@@ -252,6 +270,7 @@ export const DateRangePickerFilter = ({
       />
       <div className="rcta-range">
         <RangeDatePicker
+          id={inputId}
           key={calendarSystem}
           calendarSystem={calendarSystem}
           format={format}
@@ -278,6 +297,8 @@ export const AmountRangeFilter = ({
         <input
           className="rcta-input"
           min={schema.min}
+          max={schema.max}
+          aria-label={`${schema.label}: ${labels.amountMin}`}
           placeholder={labels.amountMin}
           type="number"
           value={range.min ?? ''}
@@ -294,6 +315,8 @@ export const AmountRangeFilter = ({
         <input
           className="rcta-input"
           max={schema.max}
+          min={schema.min}
+          aria-label={`${schema.label}: ${labels.amountMax}`}
           placeholder={labels.amountMax}
           type="number"
           value={range.max ?? ''}

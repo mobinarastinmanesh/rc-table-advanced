@@ -5,13 +5,17 @@ export type DateCalendarSystem = 'jalali' | 'gregorian' | 'hijri';
 export type DateValue = string;
 export type DateRangeValue = { from?: DateValue; to?: DateValue };
 
-export interface DatePickerProps
-  extends Omit<ComponentProps<typeof ReactDatePicker>, 'calendar' | 'locale'> {
+export interface DatePickerProps extends Omit<
+  ComponentProps<typeof ReactDatePicker>,
+  'calendar' | 'locale'
+> {
   calendarSystem?: DateCalendarSystem;
 }
 
-export interface RangeDatePickerProps
-  extends Omit<DatePickerProps, 'value' | 'onChange' | 'range'> {
+export interface RangeDatePickerProps extends Omit<
+  DatePickerProps,
+  'value' | 'onChange' | 'range'
+> {
   onChange?: (value: DateRangeValue | undefined) => void;
   value: DateRangeValue | undefined;
 }
