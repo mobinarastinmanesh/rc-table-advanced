@@ -1,6 +1,6 @@
 # Migrating from v1 to v2
 
-This is an unpublished release candidate. Test it against your application before adopting a final release.
+This is the v2 release candidate in the `next` channel. Test it against your application before adopting a final release.
 
 ## Dates: migrate stored values explicitly
 

@@ -4,7 +4,7 @@ Use rc-table-advanced when you need a styled table with filter controls, RTL and
 
 ## Install and mount
 
-Install the package together with matching React and React DOM versions (18 or 19). In this unpublished checkout, run `npm ci`, `npm run build`, `npm ci --prefix example`, then `npm run dev`.
+Install the package together with matching React and React DOM versions (18 or 19). Install the candidate with `npm install rc-table-advanced@next`. To develop from a checkout, run `npm ci`, `npm run build`, `npm ci --prefix example`, then `npm run dev`.
 
 Define a stable `rowKey`, typed `columns`, and `data`. Data must already contain the rows to render. Start with the complete working example in the README. Use stable schema/columns references when possible.
 

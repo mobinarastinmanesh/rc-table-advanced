@@ -4,7 +4,11 @@ User-visible changes are recorded here. Version numbers follow semantic versioni
 
 ## [Unreleased]
 
-Planned version: **2.0.0-rc.0**. This candidate has not been published.
+No changes recorded.
+
+## [2.0.0-rc.0] — 2026-11-11
+
+Pre-release channel: `next`. Review the migration guide before upgrading.
 
 ### Breaking changes
 
@@ -50,5 +54,6 @@ Read the [v2 migration guide](docs/migration.md) before upgrading.
 
 The published stable baseline for this candidate: React table/filter/pagination components, multi-calendar date filters, RTL and localized labels. This changelog does not reconstruct unpublished historical release notes.
 
-[Unreleased]: https://github.com/mobinarastinmanesh/rc-table-advanced/compare/2bc1ee7...HEAD
+[Unreleased]: https://github.com/mobinarastinmanesh/rc-table-advanced/compare/v2.0.0-rc.0...HEAD
+[2.0.0-rc.0]: https://github.com/mobinarastinmanesh/rc-table-advanced/compare/v1.0.0...v2.0.0-rc.0
 [1.0.0]: https://www.npmjs.com/package/rc-table-advanced/v/1.0.0

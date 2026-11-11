@@ -6,12 +6,12 @@ React tables for admin apps: schema-driven filters, pagination controls, RTL and
 
 [Live demo & documentation](https://mobinarastinmanesh.github.io/rc-table-advanced/) · [API](docs/api.md) · [Migration to v2](docs/migration.md) · [Changelog](CHANGELOG.md)
 
-> This checkout prepares **2.0.0-rc.0**. It has not been published. The npm badge and online demo may still describe v1.
+> **2.0.0-rc.0 is a release candidate** available through the `next` channel. Read the migration guide before upgrading from v1.
 
 ## Install
 
 ```sh
-npm install rc-table-advanced
+npm install rc-table-advanced@next
 ```
 
 React and React DOM 18 or 19 are peer dependencies. Node 20.19+ is required for development and the package's declared runtime support. See the migration guide before adopting v2.
