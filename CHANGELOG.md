@@ -6,6 +6,23 @@ User-visible changes are recorded here. Version numbers follow semantic versioni
 
 No changes recorded.
 
+## [2.0.0] — 2026-11-11
+
+Stable v2, promoted after rc.1 was downloaded from npm and passed 27 independent browser scenarios across Chromium, Firefox and WebKit, plus isolated React 18/19 consumer checks. The runtime bundle is unchanged from the validated rc.1.
+
+### Breaking changes from v1
+
+- Date filters store Gregorian `YYYY-MM-DD` values; migrate stored v1 display-calendar dates explicitly.
+- URL filters use typed, namespaced JSON encoding. Legacy shared links remain readable, with the migration limitations documented below.
+- Filter, sort and reset events emit page 1 by default. Consume each pagination snapshot or explicitly disable page reset.
+- Use public ESM/CommonJS/CSS exports instead of private `dist/*` paths. Node support is 20.19+; React 18 and 19 are supported.
+
+### Included in stable v2
+
+- Schema-driven filters, RTL, Persian/Gregorian/Hijri dates, explicit CSS and SSR-compatible exports.
+- WebKit-safe modal/drawer keyboard navigation, input validation and controlled URL/filter workflows.
+- 76 source tests, coverage thresholds, public coverage reports, migration/API guides and production consumer checks. See the rc.0 and rc.1 entries for the detailed changes.
+
 ## [2.0.0-rc.1] — 2026-11-11
 
 Pre-release channel: `next`. Fixes the WebKit keyboard regression found during independent RC acceptance testing.

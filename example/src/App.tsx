@@ -8,7 +8,7 @@ function App() {
       <header className="demo-header">
         <h1>rc-table-advanced</h1>
         <p>
-          <strong>2.0.0-rc.1 — release candidate</strong>
+          <strong>2.0.0 — stable</strong>
         </p>
         <nav aria-label="Project links">
           <a href={`${import.meta.env.BASE_URL}docs/getting-started/`}>

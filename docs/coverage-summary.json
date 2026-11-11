@@ -1,6 +1,6 @@
 {
-  "version": "2.0.0-rc.1",
-  "fingerprint": "3762781c86d4b3af5c2bc268bda97582e1b1a77d15cd45db444c6708e47dbc22",
+  "version": "2.0.0",
+  "fingerprint": "455e021c0de36357a1d15b6c79f946160203ec27bdd253b0ea8e8c6f62436877",
   "sourceFiles": 49,
   "testFiles": 11,
   "tests": 76,

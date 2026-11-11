@@ -10,7 +10,7 @@ For nonce-based delivery of this package's own CSS, import `injectStyles` from t
 
 ## Upstream CSP limitation
 
-`react-multi-date-picker` injects its base styles on module import without a nonce. The core entry and `injectStyles({ nonce })` only control rc-table-advanced's own CSS; they do not disable or authorize that upstream injection. A strict `style-src` policy is not fully supported out of the box. Validate an approved upstream integration against your policy before deploying calendar filters. No claim of full CSP compatibility is made for this release candidate.
+`react-multi-date-picker` injects its base styles on module import without a nonce. The core entry and `injectStyles({ nonce })` only control rc-table-advanced's own CSS; they do not disable or authorize that upstream injection. A strict `style-src` policy is not fully supported out of the box. Validate an approved upstream integration against your policy before deploying calendar filters. No claim of full CSP compatibility is made for this release.
 
 ## Customization
 

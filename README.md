@@ -6,12 +6,12 @@ React tables for admin apps: schema-driven filters, pagination controls, RTL and
 
 [Live demo & documentation](https://mobinarastinmanesh.github.io/rc-table-advanced/) · [API](docs/api.md) · [Migration to v2](docs/migration.md) · [Changelog](CHANGELOG.md)
 
-> **2.0.0-rc.1 is a release candidate** available through the `next` channel. Read the migration guide before upgrading from v1.
+> **v2.0.0 is the stable v2 release.** Read the migration guide before upgrading from v1.
 
 ## Install
 
 ```sh
-npm install rc-table-advanced@next
+npm install rc-table-advanced
 ```
 
 React and React DOM 18 or 19 are peer dependencies. Node 20.19+ is required for development and the package's declared runtime support. See the migration guide before adopting v2.
@@ -130,7 +130,7 @@ The source coverage gate is enforced in CI. [Testing strategy and limits](docs/t
 
 <!-- coverage:summary:start -->
 
-Measured from the complete source test suite for **2.0.0-rc.1**: **76 tests** across **11 files**.
+Measured from the complete source test suite for **2.0.0**: **76 tests** across **11 files**.
 
 | Metric     | Covered / total | Coverage | Required |
 | ---------- | --------------- | -------- | -------- |
@@ -139,7 +139,7 @@ Measured from the complete source test suite for **2.0.0-rc.1**: **76 tests** ac
 | functions  | 271 / 277       | 97.83%   | 95%      |
 | lines      | 934 / 943       | 99.04%   | 95%      |
 
-Source, test and toolchain fingerprint: `3762781c86d4b3af`. Demo code, declaration-only files and the CSS-only entry are excluded; runtime library code is included even when unimported.
+Source, test and toolchain fingerprint: `455e021c0de36357`. Demo code, declaration-only files and the CSS-only entry are excluded; runtime library code is included even when unimported.
 
 <!-- coverage:summary:end -->
 

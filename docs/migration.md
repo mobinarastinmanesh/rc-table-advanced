@@ -1,6 +1,6 @@
 # Migrating from v1 to v2
 
-This is the v2 release candidate in the `next` channel. Test it against your application before adopting a final release.
+v2.0.0 is the stable v2 release. Review the breaking changes below and test the upgrade against your application before deploying it.
 
 ## Dates: migrate stored values explicitly
 
