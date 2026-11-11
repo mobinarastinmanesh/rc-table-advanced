@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Calendars, localization and RTL | rc-table-advanced</title><meta name="description" content="Date filters use Gregorian date-only strings in YYYY-MM-DD, independent of the visible calendar or locale. Ranges use { from?: string; to?: string }. No UTC timestamp, time-of-day "><link rel="canonical" href="https://mobinarastinmanesh.github.io/rc-table-advanced/docs/calendars/"><meta property="og:type" content="website"><meta property="og:title" content="Calendars, localization and RTL | rc-table-advanced"><meta property="og:description" content="Date filters use Gregorian date-only strings in YYYY-MM-DD, independent of the visible calendar or locale. Ranges use { from?: string; to?: string }. No UTC timestamp, time-of-day "><meta property="og:url" content="https://mobinarastinmanesh.github.io/rc-table-advanced/docs/calendars/"><meta property="og:image" content="https://mobinarastinmanesh.github.io/rc-table-advanced/social-preview.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/rc-table-advanced/favicon.svg"><link rel="stylesheet" href="/rc-table-advanced/docs/docs.css"></head><body><a class="skip" href="#content">Skip to content</a><header><a href="/rc-table-advanced/">rc-table-advanced</a><span>2.0.0-rc.0 · release candidate</span><a href="https://github.com/mobinarastinmanesh/rc-table-advanced">GitHub</a></header><div class="layout"><nav aria-label="Documentation"><a href="/rc-table-advanced/docs/adoption/">Adoption and release plan</a><a href="/rc-table-advanced/docs/api/">API reference</a><a href="/rc-table-advanced/docs/calendars/">Calendars, localization and RTL</a><a href="/rc-table-advanced/docs/contributing/">Contributing and release checks</a><a href="/rc-table-advanced/docs/filters/">Schema-driven filters and validation</a><a href="/rc-table-advanced/docs/getting-started/">Getting started with React admin tables</a><a href="/rc-table-advanced/docs/migration/">Migrating from v1 to v2</a><a href="/rc-table-advanced/docs/ssr/">SSR and Next.js</a><a href="/rc-table-advanced/docs/state-and-server/">Server-side React table filtering and pagination</a><a href="/rc-table-advanced/docs/styling/">Styling, CSP and portals</a><a href="/rc-table-advanced/docs/testing/">Testing strategy and measured coverage</a><a href="/rc-table-advanced/docs/url-state/">Shareable URL state and multiple tables</a></nav><main id="content"><h1>Calendars, localization and RTL</h1>
+<h2>Date value contract in v2</h2>
+<p>Date filters use <strong>Gregorian date-only strings in <code>YYYY-MM-DD</code></strong>, independent of the visible calendar or locale. Ranges use <code>{ from?: string; to?: string }</code>. No UTC timestamp, time-of-day or timezone conversion is implied.</p>
+<p>The picker can show Persian (<code>jalali</code>), Gregorian (<code>gregorian</code>) or conventional lunar Hijri (<code>hijri</code>). Switching calendars changes presentation while preserving the selected day. The default visible calendar remains Persian for compatibility.</p>
+<pre><code class="language-ts">const schema = {
+  key: &#39;createdAt&#39;,
+  label: &#39;Created at&#39;,
+  type: FilterType.DATE_PICKER,
+  calendarSystems: [&#39;jalali&#39;, &#39;gregorian&#39;, &#39;hijri&#39;],
+  calendarSystem: &#39;gregorian&#39;,
+  format: &#39;YYYY/MM/DD&#39;, // display only; emitted value stays YYYY-MM-DD
+};
+</code></pre>
+<p><code>toDisplayDate(canonicalValue, calendar)</code> creates a calendar-aware DateObject; <code>toCanonicalDate(dateObject)</code> returns a Gregorian ASCII date string. Invalid canonical dates return <code>undefined</code> from <code>toDisplayDate</code>.</p>
+<p>When building server ranges, define inclusivity and the business timezone in your API. Do not convert a date-only string to an instant without that policy. The upstream Hijri calendar is calculated and can differ from local moon-sighting calendars; validate suitability for your use case.</p>
+<h2>RTL and labels</h2>
+<p>Set <code>dir=&quot;rtl&quot;</code>. The default drawer edge becomes left (right in LTR); <code>drawerPlacement</code> overrides it. Override copy with <code>labels</code>, including date navigation and validation messages. Use <code>LabelsProvider</code> and <code>TableDirectionProvider</code> when composing primitives outside <code>AdvancedTable</code>.</p>
+<pre><code class="language-tsx">&lt;AdvancedTable
+  columns={columns}
+  data={rows}
+  dir=&quot;rtl&quot;
+  labels={{
+    search: &#39;جستجو&#39;,
+    filtersButton: &#39;فیلترها&#39;,
+    previousMonth: &#39;ماه قبل&#39;,
+    nextMonth: &#39;ماه بعد&#39;,
+    requiredField: &#39;تکمیل این فیلد الزامی است&#39;,
+    invalidRange: &#39;بازه معتبر وارد کنید&#39;,
+    paginationPrevious: &#39;قبلی&#39;,
+    paginationNext: &#39;بعدی&#39;,
+  }}
+/&gt;
+</code></pre>
+<p>Calendar locale defaults are provided by the upstream picker; translating table labels does not translate every upstream calendar string. A fully custom picker can be supplied through a custom filter.</p>
+</main></div></body></html>

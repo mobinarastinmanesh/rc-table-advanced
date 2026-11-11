@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Schema-driven filters and validation | rc-table-advanced</title><meta name="description" content="filterModalSchema contains modal fields. drawerFilterGroups contains { key, title, schema } groups. Both use FilterSchema. Applied chips use schema labels and selected option label"><link rel="canonical" href="https://mobinarastinmanesh.github.io/rc-table-advanced/docs/filters/"><meta property="og:type" content="website"><meta property="og:title" content="Schema-driven filters and validation | rc-table-advanced"><meta property="og:description" content="filterModalSchema contains modal fields. drawerFilterGroups contains { key, title, schema } groups. Both use FilterSchema. Applied chips use schema labels and selected option label"><meta property="og:url" content="https://mobinarastinmanesh.github.io/rc-table-advanced/docs/filters/"><meta property="og:image" content="https://mobinarastinmanesh.github.io/rc-table-advanced/social-preview.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/rc-table-advanced/favicon.svg"><link rel="stylesheet" href="/rc-table-advanced/docs/docs.css"></head><body><a class="skip" href="#content">Skip to content</a><header><a href="/rc-table-advanced/">rc-table-advanced</a><span>2.0.0-rc.0 · release candidate</span><a href="https://github.com/mobinarastinmanesh/rc-table-advanced">GitHub</a></header><div class="layout"><nav aria-label="Documentation"><a href="/rc-table-advanced/docs/adoption/">Adoption and release plan</a><a href="/rc-table-advanced/docs/api/">API reference</a><a href="/rc-table-advanced/docs/calendars/">Calendars, localization and RTL</a><a href="/rc-table-advanced/docs/contributing/">Contributing and release checks</a><a href="/rc-table-advanced/docs/filters/">Schema-driven filters and validation</a><a href="/rc-table-advanced/docs/getting-started/">Getting started with React admin tables</a><a href="/rc-table-advanced/docs/migration/">Migrating from v1 to v2</a><a href="/rc-table-advanced/docs/ssr/">SSR and Next.js</a><a href="/rc-table-advanced/docs/state-and-server/">Server-side React table filtering and pagination</a><a href="/rc-table-advanced/docs/styling/">Styling, CSP and portals</a><a href="/rc-table-advanced/docs/testing/">Testing strategy and measured coverage</a><a href="/rc-table-advanced/docs/url-state/">Shareable URL state and multiple tables</a></nav><main id="content"><h1>Schema-driven filters and validation</h1>
+<p><code>filterModalSchema</code> contains modal fields. <code>drawerFilterGroups</code> contains <code>{ key, title, schema }</code> groups. Both use <code>FilterSchema</code>. Applied chips use schema labels and selected option labels, including drawer fields.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SINGLE_SELECT</code>, <code>SINGLE_BADGE_SELECT</code></td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>MULTIPLE_SELECT</code>, <code>MULTIPLE_BADGE_SELECT</code></td>
+<td>string array</td>
+</tr>
+<tr>
+<td><code>AMOUNT_RANGE</code></td>
+<td><code>{ min?: number; max?: number }</code></td>
+</tr>
+<tr>
+<td><code>DATE_PICKER</code></td>
+<td>Gregorian <code>YYYY-MM-DD</code></td>
+</tr>
+<tr>
+<td><code>DATE_RANGE_PICKER</code></td>
+<td><code>{ from?: string; to?: string }</code></td>
+</tr>
+<tr>
+<td><code>CUSTOM</code></td>
+<td>a supported <code>FilterSchemaValue</code></td>
+</tr>
+</tbody></table>
+<h2>Common fields</h2>
+<p>Every schema has <code>key</code>, <code>label</code> and <code>type</code>. Selects require <code>options: { value: string; label: string; disabled?: boolean }[]</code>. Optional fields are <code>defaultValue</code>, <code>required</code>, <code>helperText</code>, <code>onChange</code> and <code>render</code>.</p>
+<p><code>defaultValue</code> initializes a dialog draft if the value is absent when opening. It does not fetch data or activate a filter before Apply. Use <code>initialFilters</code> or controlled state for initially applied values.</p>
+<p>Modal and drawer Apply validate required fields, amount bounds and order, canonical dates, and date range order. Errors keep the dialog open and are announced via alert markup. A partially filled range is allowed unless your own custom validation requires both endpoints. Numeric <code>min</code> and <code>max</code> constrain both ends. Custom filters must validate domain-specific rules themselves.</p>
+<p><code>validateFilters(schema, values, labels)</code> exposes the same validation helper. Standalone field primitives emit changes; they do not submit or validate an entire form.</p>
+<h2>Custom filter</h2>
+<pre><code class="language-tsx">const schema: FilterSchema[] = [
+  {
+    key: &#39;reference&#39;,
+    label: &#39;Reference&#39;,
+    type: FilterType.CUSTOM,
+    helperText: &#39;Exact order reference&#39;,
+    render: ({ value, onChange }) =&gt; (
+      &lt;label&gt;
+        Reference
+        &lt;input
+          value={typeof value === &#39;string&#39; ? value : &#39;&#39;}
+          onChange={(event) =&gt; onChange(event.target.value || undefined)}
+        /&gt;
+      &lt;/label&gt;
+    ),
+  },
+];
+</code></pre>
+<p>Do not call React hooks directly in a schema render callback; return a React component that owns its hooks. Arrays and range objects must be updated immutably.</p>
+<h2>Inline composition</h2>
+<p>Use the <code>Filters</code> primitive with <code>otherFilters</code>, <code>filters</code>, <code>setFilters</code>, <code>applyFilter</code> and <code>changeMode</code>. Inline fields use the same schema renderer as dialog fields, including badge, amount and custom filters. <code>isLoading</code> renders a loading label. <code>children</code>, <code>headerContent</code>, <code>subTitle</code> and <code>filteredItemCount</code> can add content; <code>hasModal</code> and <code>isSubmitDisabled</code> control the modal trigger and submit button.</p>
+<h2>TypeScript</h2>
+<p><code>FilterSchema&lt;MyFilters&gt;[]</code> narrows schema keys to your filter model when it has explicit keys. The discriminated union narrows each field&#39;s value shape by filter type. Arbitrary index signatures allow arbitrary keys; the library does not infer an entire model from a schema or validate your API response.</p>
+<h2>Keyboard behavior</h2>
+<p>Dropdowns support arrows, Home/End, Enter/Space, Escape, Tab dismissal and first-character navigation. Selected badges expose pressed state. Dialogs trap focus, restore the previous focus and make background body siblings inert while open. Closed drawer groups are hidden from keyboard navigation. Test your custom renderers, nested overlays and application theme with your supported browsers and assistive technology.</p>
+</main></div></body></html>

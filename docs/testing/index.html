@@ -1,0 +1,87 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Testing strategy and measured coverage | rc-table-advanced</title><meta name="description" content="Tests are a release requirement. Source coverage, compiled-package checks and real-browser scenarios answer different questions and remain separate."><link rel="canonical" href="https://mobinarastinmanesh.github.io/rc-table-advanced/docs/testing/"><meta property="og:type" content="website"><meta property="og:title" content="Testing strategy and measured coverage | rc-table-advanced"><meta property="og:description" content="Tests are a release requirement. Source coverage, compiled-package checks and real-browser scenarios answer different questions and remain separate."><meta property="og:url" content="https://mobinarastinmanesh.github.io/rc-table-advanced/docs/testing/"><meta property="og:image" content="https://mobinarastinmanesh.github.io/rc-table-advanced/social-preview.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/rc-table-advanced/favicon.svg"><link rel="stylesheet" href="/rc-table-advanced/docs/docs.css"></head><body><a class="skip" href="#content">Skip to content</a><header><a href="/rc-table-advanced/">rc-table-advanced</a><span>2.0.0-rc.0 · release candidate</span><a href="https://github.com/mobinarastinmanesh/rc-table-advanced">GitHub</a></header><div class="layout"><nav aria-label="Documentation"><a href="/rc-table-advanced/docs/adoption/">Adoption and release plan</a><a href="/rc-table-advanced/docs/api/">API reference</a><a href="/rc-table-advanced/docs/calendars/">Calendars, localization and RTL</a><a href="/rc-table-advanced/docs/contributing/">Contributing and release checks</a><a href="/rc-table-advanced/docs/filters/">Schema-driven filters and validation</a><a href="/rc-table-advanced/docs/getting-started/">Getting started with React admin tables</a><a href="/rc-table-advanced/docs/migration/">Migrating from v1 to v2</a><a href="/rc-table-advanced/docs/ssr/">SSR and Next.js</a><a href="/rc-table-advanced/docs/state-and-server/">Server-side React table filtering and pagination</a><a href="/rc-table-advanced/docs/styling/">Styling, CSP and portals</a><a href="/rc-table-advanced/docs/testing/">Testing strategy and measured coverage</a><a href="/rc-table-advanced/docs/url-state/">Shareable URL state and multiple tables</a></nav><main id="content"><h1>Testing strategy and measured coverage</h1>
+<p>Tests are a release requirement. Source coverage, compiled-package checks and real-browser scenarios answer different questions and remain separate.</p>
+<h2>Current measured source coverage</h2>
+<!-- coverage:summary:start --><p>Measured from the complete source test suite for <strong>2.0.0-rc.0</strong>: <strong>75 tests</strong> across <strong>11 files</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Covered / total</th>
+<th>Coverage</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>statements</td>
+<td>1009 / 1024</td>
+<td>98.53%</td>
+<td>95%</td>
+</tr>
+<tr>
+<td>branches</td>
+<td>881 / 926</td>
+<td>95.14%</td>
+<td>90%</td>
+</tr>
+<tr>
+<td>functions</td>
+<td>270 / 276</td>
+<td>97.82%</td>
+<td>95%</td>
+</tr>
+<tr>
+<td>lines</td>
+<td>941 / 950</td>
+<td>99.05%</td>
+<td>95%</td>
+</tr>
+</tbody></table>
+<p>Source, test and toolchain fingerprint: <code>cbaaf9a9519842ea</code>. Demo code, declaration-only files and the CSS-only entry are excluded; runtime library code is included even when unimported.</p>
+<!-- coverage:summary:end --><p>These numbers cover first-party runtime TypeScript/TSX using Vitest and V8 with source remapping. They do not count third-party code, tests, generated bundles, CSS, declaration-only files or demonstration-only code. Re-export/type-only modules may have zero executable statements; they do not add covered lines to the total.</p>
+<p>The <a href="/rc-table-advanced/coverage/summary.json">checked-in JSON snapshot</a> includes a per-file breakdown. The website build includes the full <a href="/rc-table-advanced/coverage/">interactive HTML report</a>, including uncovered lines and branches. The same report is available in the CI coverage artifact.</p>
+<h2>Reproduce locally</h2>
+<pre><code class="language-sh">npm ci
+npm run test:coverage
+npm run coverage:check
+</code></pre>
+<p><code>test:coverage</code> runs the complete source suite and checks 95% statements, 95% lines, 95% functions and 90% branches. Every executable file also has a floor of 90% lines/statements and 80% branches/functions, so a weak file cannot hide behind the global average. It then updates this page, the README and the normalized JSON snapshot from the actual report. A source/test/toolchain fingerprint detects stale documentation; percentages are not hand-edited. All source test files must run and no skipped or failed tests are accepted for a documentation update.</p>
+<p>Open <code>coverage/index.html</code> for details. <code>coverage/lcov.info</code> and <code>coverage/cobertura-coverage.xml</code> support external CI tools. Reports are generated locally and uploaded by CI; raw reports are not shipped in the npm tarball.</p>
+<h2>Test layers</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>What it verifies</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Source unit and DOM</td>
+<td>Filter state, URL ownership/navigation/cancellation, validation, dialogs, keyboard/focus, pagination, custom slots, calendars and styling</td>
+</tr>
+<tr>
+<td>Property-based</td>
+<td>500 reproducible generated supported JSON values exercise serialization without numeric/comma type inference</td>
+</tr>
+<tr>
+<td>Compiled output</td>
+<td>The actual ESM/CJS public exports, native SSR and regression contracts</td>
+</tr>
+<tr>
+<td>Isolated tarball consumers</td>
+<td>Runtime and strict TypeScript resolution with React 18 and 19, CSS export and documentation examples</td>
+</tr>
+<tr>
+<td>Next.js production fixture</td>
+<td>SSR HTML plus browser hydration and interactive filtering</td>
+</tr>
+<tr>
+<td>Chromium browser</td>
+<td>English/RTL demo, mobile layout, no-JavaScript docs, calendar switching and focus containment</td>
+</tr>
+</tbody></table>
+<p>Calendar-wrapper unit tests substitute the upstream picker at its boundary to exercise every callback and module export shape; browser tests use the real picker. DOM tests simulate geometry only where required; real browser tests check layout-dependent behavior.</p>
+<p>The complete source suite has also been run locally with React 18.3.1 and React 19.2.4; both passed with matching coverage totals. CI repeats both versions.</p>
+<h2>Coverage is evidence, not a correctness guarantee</h2>
+<p>A high percentage cannot prove accessibility across all assistive technologies, all browser engines, performance on every dataset, application API behavior or full CSP compatibility. The upstream picker&#39;s nonce limitation remains documented in the styling guide. Browser and package checks are not merged into the source percentage, and a green coverage badge does not replace those checks.</p>
+<p>New bug reports should produce a regression test before a fix. Test observable state, DOM and callbacks rather than private implementation snapshots. Do not exclude runtime files, lower thresholds or add ignore comments merely to make the gate green.</p>
+</main></div></body></html>

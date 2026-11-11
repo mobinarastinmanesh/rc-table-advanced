@@ -1,0 +1,177 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>API reference | rc-table-advanced</title><meta name="description" content="All components and helpers below are exported by the default and core entries. The default entry adds this package's automatic styles; core leaves their delivery to the app. The up"><link rel="canonical" href="https://mobinarastinmanesh.github.io/rc-table-advanced/docs/api/"><meta property="og:type" content="website"><meta property="og:title" content="API reference | rc-table-advanced"><meta property="og:description" content="All components and helpers below are exported by the default and core entries. The default entry adds this package's automatic styles; core leaves their delivery to the app. The up"><meta property="og:url" content="https://mobinarastinmanesh.github.io/rc-table-advanced/docs/api/"><meta property="og:image" content="https://mobinarastinmanesh.github.io/rc-table-advanced/social-preview.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/rc-table-advanced/favicon.svg"><link rel="stylesheet" href="/rc-table-advanced/docs/docs.css"></head><body><a class="skip" href="#content">Skip to content</a><header><a href="/rc-table-advanced/">rc-table-advanced</a><span>2.0.0-rc.0 · release candidate</span><a href="https://github.com/mobinarastinmanesh/rc-table-advanced">GitHub</a></header><div class="layout"><nav aria-label="Documentation"><a href="/rc-table-advanced/docs/adoption/">Adoption and release plan</a><a href="/rc-table-advanced/docs/api/">API reference</a><a href="/rc-table-advanced/docs/calendars/">Calendars, localization and RTL</a><a href="/rc-table-advanced/docs/contributing/">Contributing and release checks</a><a href="/rc-table-advanced/docs/filters/">Schema-driven filters and validation</a><a href="/rc-table-advanced/docs/getting-started/">Getting started with React admin tables</a><a href="/rc-table-advanced/docs/migration/">Migrating from v1 to v2</a><a href="/rc-table-advanced/docs/ssr/">SSR and Next.js</a><a href="/rc-table-advanced/docs/state-and-server/">Server-side React table filtering and pagination</a><a href="/rc-table-advanced/docs/styling/">Styling, CSP and portals</a><a href="/rc-table-advanced/docs/testing/">Testing strategy and measured coverage</a><a href="/rc-table-advanced/docs/url-state/">Shareable URL state and multiple tables</a></nav><main id="content"><h1>API reference</h1>
+<p>All components and helpers below are exported by the default and core entries. The default entry adds this package&#39;s automatic styles; core leaves their delivery to the app. The upstream picker has separate style injection; see the styling guide. CSS is exported as <code>rc-table-advanced/styles.css</code>.</p>
+<h2>AdvancedTable&lt;Row, Filters&gt;</h2>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Default</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>columns</code>, <code>data</code>, <code>rowKey</code></td>
+<td>rc-table defaults</td>
+<td>Typed column definitions, already-processed visible rows, stable row identity</td>
+</tr>
+<tr>
+<td><code>filters</code></td>
+<td>internal state</td>
+<td>Controlled filters; handle <code>onFiltersChange</code></td>
+</tr>
+<tr>
+<td><code>initialFilters</code></td>
+<td><code>{}</code></td>
+<td>Initial internal filters and reset defaults</td>
+</tr>
+<tr>
+<td><code>onFiltersChange</code></td>
+<td>—</td>
+<td>Proposed filter state, including submit-mode drafts and URL hydration/navigation</td>
+</tr>
+<tr>
+<td><code>onChange</code></td>
+<td>—</td>
+<td>Applied <code>{ filters, pagination, reason, paginationChanged? }</code>; no initial-load event</td>
+</tr>
+<tr>
+<td><code>pagination</code></td>
+<td>absent</td>
+<td>Controlled <code>{ page, pageSize, total?, totalPages?, hasNext?, hasPrev?, pageSizeOptions? }</code></td>
+</tr>
+<tr>
+<td><code>resetPageOnFilterChange</code></td>
+<td><code>true</code></td>
+<td>Emit page 1 when applying filters/sort/reset</td>
+</tr>
+<tr>
+<td><code>filterModalSchema</code></td>
+<td><code>[]</code></td>
+<td>Modal field schemas</td>
+</tr>
+<tr>
+<td><code>drawerFilterGroups</code></td>
+<td><code>[]</code></td>
+<td>Groups with key, title and schema</td>
+</tr>
+<tr>
+<td><code>filterMode</code></td>
+<td><code>ON_CHANGE</code></td>
+<td>Toolbar live or submit application; dialog Apply always commits</td>
+</tr>
+<tr>
+<td><code>hasSearch</code>, <code>hasSort</code></td>
+<td><code>true</code></td>
+<td>Show toolbar controls</td>
+</tr>
+<tr>
+<td><code>searchTrigger</code></td>
+<td><code>button</code></td>
+<td><code>button</code>, <code>instant</code> or <code>debounced</code></td>
+</tr>
+<tr>
+<td><code>searchDebounceMs</code></td>
+<td><code>300</code></td>
+<td>Delay for debounced input</td>
+</tr>
+<tr>
+<td><code>searchLabel</code></td>
+<td>localized search</td>
+<td>Input/button accessible name and placeholder</td>
+</tr>
+<tr>
+<td><code>sortOptions</code></td>
+<td>newest/oldest</td>
+<td>Array of options; application implements ordering</td>
+</tr>
+<tr>
+<td><code>syncFiltersWithUrl</code></td>
+<td><code>false</code></td>
+<td>Enable browser-history filter adapter</td>
+</tr>
+<tr>
+<td><code>urlPrefix</code></td>
+<td><code>rcta_</code></td>
+<td>Owned parameter prefix; distinct per table</td>
+</tr>
+<tr>
+<td><code>urlFilterKeys</code></td>
+<td><code>[]</code></td>
+<td>Additional owned filter keys</td>
+</tr>
+<tr>
+<td><code>labels</code></td>
+<td>English defaults</td>
+<td>Partial <code>AdvancedTableLabels</code> overrides</td>
+</tr>
+<tr>
+<td><code>dir</code></td>
+<td><code>ltr</code></td>
+<td>Layout direction</td>
+</tr>
+<tr>
+<td><code>drawerPlacement</code></td>
+<td>right in LTR, left in RTL</td>
+<td>Explicit left/right override</td>
+</tr>
+<tr>
+<td><code>className</code>, <code>classNames</code></td>
+<td>—</td>
+<td>Root class and named-region classes</td>
+</tr>
+<tr>
+<td><code>loading</code>, <code>emptyText</code></td>
+<td>false / localized empty</td>
+<td>Loading status and empty content</td>
+</tr>
+<tr>
+<td><code>showSizeChanger</code></td>
+<td>false</td>
+<td>Page-size dropdown</td>
+</tr>
+<tr>
+<td><code>slots</code></td>
+<td>—</td>
+<td>empty/loading/footer/custom pagination and table-wide error-cell rendering</td>
+</tr>
+<tr>
+<td><code>getData</code></td>
+<td>—</td>
+<td>Legacy pagination-only callback; prefer onChange</td>
+</tr>
+<tr>
+<td><code>realTimeSearch</code></td>
+<td>—</td>
+<td>Deprecated alias: true means instant unless searchTrigger is supplied</td>
+</tr>
+</tbody></table>
+<p>Other supported table props are forwarded to <a href="https://github.com/react-component/table">rc-table</a>, including scroll, expandable, row events and table components. Columns are typed as <code>ColumnType&lt;Row&gt;[]</code>; arbitrary rc-table column groups are not added by this wrapper.</p>
+<p><code>reason</code> is <code>filter</code>, <code>sort</code>, <code>pagination</code> or <code>reset</code>. <code>paginationChanged</code> is retained for compatibility and is true for pagination control events. Use <code>reason</code> plus the returned pagination snapshot in new integrations.</p>
+<h2>Table<Row></h2>
+<p>The table-only wrapper accepts the table, pagination, styling, loading and slot props above. Its <code>onChange</code> receives <code>{ pagination }</code>. It does not add the filter toolbar or AdvancedTable&#39;s localization provider. Compose it with <code>LabelsProvider</code> when needed.</p>
+<h2>Dialogs and filters</h2>
+<p><code>FilterModal</code>: <code>open</code>, <code>schema</code>, <code>values?</code>, <code>title?</code>, <code>onApply</code>, <code>onClose</code>, <code>classNames?</code>, <code>dir?</code>, <code>style?</code>, <code>renderShell?</code>.</p>
+<p><code>DrawerFilter</code>: <code>open</code>, <code>groups</code>, <code>values?</code>, <code>title?</code>, <code>onApply</code>, <code>onClose</code>, <code>classNames?</code>, <code>dir?</code>, <code>style?</code>, <code>placement?</code>, <code>autoApplyOnClear?</code>.</p>
+<p><code>values</code> is applied state; each dialog snapshots it when opening. Closing discards local edits. <code>autoApplyOnClear</code> is false by default; standalone drawer consumers can opt into immediate clear callbacks. Custom modal shells receive the default dialog content and must preserve its accessibility semantics.</p>
+<p><code>Filters&lt;T&gt;</code>: <code>filters</code>, <code>setFilters</code>, <code>applyFilter</code>, <code>changeMode</code> are required. Optional <code>otherFilters</code>, <code>filterModalSchema</code>, <code>filterChipSchema</code>, <code>sortOptions</code>, search configuration, <code>tableKey</code>, <code>excludedKeys</code>, clear/open callbacks, labels through context, and classes customize composition. <code>headerContent</code>, <code>subTitle</code>, <code>filteredItemCount</code> and <code>children</code> add content. <code>hasModal</code> toggles the modal trigger and <code>isSubmitDisabled</code> disables the submit action.</p>
+<p>Field primitives: <code>SingleSelectFilter</code>, <code>MultipleSelectFilter</code>, <code>SingleBadgeSelectFilter</code>, <code>MultipleBadgeSelectFilter</code>, <code>AmountRangeFilter</code>, <code>DatePickerFilter</code>, <code>DateRangePickerFilter</code> take <code>{ schema, value, onChange }</code>. See <a href="/rc-table-advanced/docs/filters/">schemas</a> and <a href="/rc-table-advanced/docs/calendars/">dates</a>.</p>
+<h2>Cells</h2>
+<p><code>TableCell</code>: <code>value</code>, optional <code>fallback</code>, <code>className</code>, <code>errorMessage</code>, <code>renderValue</code>, <code>renderErrorCell</code>. A value may be a React-renderable value or <code>{ value, isValid?, message? }</code>. Invalid values use ErrorCell with accessible error markup.</p>
+<p><code>ErrorCell</code>: <code>value</code>, <code>message?</code>, <code>className?</code>.</p>
+<h2>Dropdown</h2>
+<p><code>options</code>, <code>onChange</code> required. Optional <code>value</code>, <code>multiple</code>, <code>placeholder</code>, <code>emptyOption</code>, <code>ariaLabel</code>, <code>className</code>, <code>disabled</code>, <code>id</code>, <code>portalContainer</code>. Option values and labels are strings. Single selection emits a string or undefined; multiple emits a string array or undefined when empty.</p>
+<h2>Helpers, providers and types</h2>
+<ul>
+<li>State: <code>useQueryControl</code>, <code>buildNextFilters</code>, <code>clearUserFilters</code>, <code>isEmptyFilterValue</code>.</li>
+<li>URL: <code>serialize</code>, <code>deserialize</code>; see <a href="/rc-table-advanced/docs/url-state/">ownership and encoding</a>.</li>
+<li>Filters: <code>FilterType</code>, <code>FilterMode</code>, <code>calculateFilterCounts</code>, <code>hasAnyFilters</code>, <code>validateFilters</code>.</li>
+<li>Dates: <code>toCanonicalDate</code>, <code>toDisplayDate</code>.</li>
+<li>Pagination: <code>getPaginationSnapshot</code>, <code>DEFAULT_PAGE</code>, <code>DEFAULT_PAGE_SIZE</code>, <code>DEFAULT_PAGE_SIZE_OPTIONS</code>.</li>
+<li>Sort: <code>DEFAULT_SORT</code>, <code>SORT_OPTIONS</code>, <code>getSortOptions</code>.</li>
+<li>Localization: <code>LabelsProvider</code>, <code>useTableLabels</code>, <code>DEFAULT_LABELS</code>, <code>mergeLabels</code>.</li>
+<li>Direction: <code>TableDirectionProvider</code>, <code>useTableDirection</code>, <code>resolveDrawerPlacement</code>.</li>
+<li>Styles: <code>injectStyles({ nonce? })</code>.</li>
+<li>Types include <code>AdvancedTableProps</code>, <code>AdvancedTableChange</code>, <code>AdvancedTableBaseProps</code>, <code>TableColumnType</code>, <code>TableFieldValue</code>, <code>TableCellProps</code>, <code>ErrorCellProps</code>, <code>PaginationConfig</code>, <code>PaginationState</code>, <code>PaginationRenderProps</code>, <code>PageSizeOption</code>, <code>TableSlots</code>, <code>TableChange</code>, <code>TableViewProps</code>, <code>TableWrapProps</code>, <code>FilterSchema</code>, <code>FilterSchemaValue</code>, <code>FiltersFormValues</code>, <code>FilterRenderProps</code>, <code>FilterValue</code>, <code>BaseFiltersState</code>, <code>FiltersProps</code>, <code>InlineFilterSchema</code>, <code>Option</code>, <code>SearchTrigger</code>, <code>DateCalendarSystem</code>, date/range/amount value types, dialog/group props, dropdown props/options, <code>AdvancedTableLabels</code>, <code>AdvancedTableClassNames</code>, <code>QueryControlOptions</code>, <code>TableDirection</code> and <code>DrawerPlacement</code>.</li>
+</ul>
+<p>Old <code>ITableProps</code>, <code>IBaseFiltersState</code>, <code>IFilters</code> and <code>IFilterSchema</code> names remain deprecated aliases. New code should use the unprefixed types.</p>
+</main></div></body></html>
