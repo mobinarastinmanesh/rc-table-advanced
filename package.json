@@ -97,7 +97,8 @@
     "test:integration": "npm run build && node --test tests/*.test.mjs",
     "test:unit": "vitest run",
     "test:coverage": "vitest run --coverage && node scripts/update-coverage-docs.mjs",
-    "coverage:check": "node scripts/update-coverage-docs.mjs --check"
+    "coverage:check": "node scripts/update-coverage-docs.mjs --check",
+    "test:react18": "node scripts/with-react-version.mjs 18.3.1 npm test"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",

@@ -18,9 +18,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm ci --prefix example
-      - run: npm install --no-save --package-lock=false react@${{ matrix.react }} react-dom@${{ matrix.react }}
       - run: npm run lint
-      - run: npm test
+      - if: matrix.react == '19.2.4'
+        run: npm test
+      - if: matrix.react == '18.3.1'
+        run: npm run test:react18
       - uses: actions/upload-artifact@v4
         if: always()
         with:

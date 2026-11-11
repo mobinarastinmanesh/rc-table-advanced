@@ -6,6 +6,7 @@ Use Node 20.19+ and npm. Run `npm ci` in the root and `npm ci --prefix example` 
 npm run lint
 npm test
 npm run coverage:check
+npm run test:react18
 npm run test:package
 npm run build:docs
 npm run test:next
@@ -28,3 +29,5 @@ The package's prepublishOnly hook runs the full checks. A real release also need
 ## Signed commits
 
 Maintainer commits for this release must be cryptographically signed. Configure your own approved SSH/GPG signing key, keep signing enabled, create commits with `git commit -S`, and verify each one with `git verify-commit HEAD`. A `Signed-off-by` line is not a cryptographic signature. Never commit private keys or registry configuration. GitHub's Verified label additionally requires the corresponding public key to be registered there as a signing key; local verification alone cannot establish that registration.
+
+`test:react18` installs an isolated React runtime, temporarily links it for the tests, and restores the locked runtime afterward. It does not re-resolve the repository dependency graph or modify the lockfile.
