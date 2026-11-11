@@ -130,16 +130,16 @@ The source coverage gate is enforced in CI. [Testing strategy and limits](docs/t
 
 <!-- coverage:summary:start -->
 
-Measured from the complete source test suite for **2.0.0-rc.0**: **75 tests** across **11 files**.
+Measured from the complete source test suite for **2.0.0-rc.0**: **76 tests** across **11 files**.
 
 | Metric     | Covered / total | Coverage | Required |
 | ---------- | --------------- | -------- | -------- |
-| statements | 1009 / 1024     | 98.53%   | 95%      |
-| branches   | 881 / 926       | 95.14%   | 90%      |
-| functions  | 270 / 276       | 97.82%   | 95%      |
-| lines      | 941 / 950       | 99.05%   | 95%      |
+| statements | 1004 / 1019     | 98.52%   | 95%      |
+| branches   | 879 / 924       | 95.12%   | 90%      |
+| functions  | 271 / 277       | 97.83%   | 95%      |
+| lines      | 934 / 943       | 99.04%   | 95%      |
 
-Source, test and toolchain fingerprint: `cbaaf9a9519842ea`. Demo code, declaration-only files and the CSS-only entry are excluded; runtime library code is included even when unimported.
+Source, test and toolchain fingerprint: `4409148a9682008c`. Demo code, declaration-only files and the CSS-only entry are excluded; runtime library code is included even when unimported.
 
 <!-- coverage:summary:end -->
 

@@ -110,8 +110,15 @@ test('changing visible calendar keeps the stored day and dialog focus stays cont
 }) => {
   await page.goto('http://127.0.0.1:4174');
   const opener = page.getByRole('button', { name: /^Filters/ });
-  await opener.click();
+  await opener.focus();
+  await opener.press('Enter');
   const dialog = page.getByRole('dialog');
+  const close = dialog.getByRole('button', { name: 'Close', exact: true });
+  await expect(close).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(
+    dialog.getByRole('combobox', { name: 'Created calendar' }),
+  ).toBeFocused();
   await expect(dialog.locator('input')).toHaveValue('2026/11/11');
   await dialog.getByRole('combobox', { name: 'Created calendar' }).click();
   await page
@@ -120,11 +127,13 @@ test('changing visible calendar keeps the stored day and dialog focus stays cont
   await expect(dialog.locator('input')).not.toHaveValue('2026/11/11');
   for (let index = 0; index < 12; index++) {
     await page.keyboard.press('Tab');
-    expect(
-      await page.evaluate(
-        () => !!document.activeElement?.closest('[role="dialog"]'),
-      ),
-    ).toBe(true);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => !!document.activeElement?.closest('[role="dialog"]'),
+        ),
+      )
+      .toBe(true);
   }
   await dialog
     .getByRole('button', { name: 'Apply filters', exact: true })

@@ -1,9 +1,9 @@
 {
   "version": "2.0.0-rc.0",
-  "fingerprint": "cbaaf9a9519842ea291e76ec48cf59062f289f3a608abf18d2b428e96943e592",
+  "fingerprint": "4409148a9682008c18fc917f98bfa0a8eae3f7a42fb977e2d0b5fc391123c0b3",
   "sourceFiles": 49,
   "testFiles": 11,
-  "tests": 75,
+  "tests": 76,
   "thresholds": {
     "statements": 95,
     "branches": 90,
@@ -18,28 +18,28 @@
   },
   "total": {
     "lines": {
-      "total": 950,
-      "covered": 941,
+      "total": 943,
+      "covered": 934,
       "skipped": 0,
-      "pct": 99.05
+      "pct": 99.04
     },
     "statements": {
-      "total": 1024,
-      "covered": 1009,
+      "total": 1019,
+      "covered": 1004,
       "skipped": 0,
-      "pct": 98.53
+      "pct": 98.52
     },
     "functions": {
-      "total": 276,
-      "covered": 270,
+      "total": 277,
+      "covered": 271,
       "skipped": 0,
-      "pct": 97.82
+      "pct": 97.83
     },
     "branches": {
-      "total": 926,
-      "covered": 881,
+      "total": 924,
+      "covered": 879,
       "skipped": 0,
-      "pct": 95.14
+      "pct": 95.12
     },
     "branchesTrue": {
       "total": 0,
@@ -103,28 +103,28 @@
     },
     "src/hooks/use-dialog-a11y.ts": {
       "lines": {
-        "total": 63,
-        "covered": 63,
+        "total": 56,
+        "covered": 56,
         "skipped": 0,
         "pct": 100
       },
       "functions": {
-        "total": 12,
-        "covered": 12,
+        "total": 13,
+        "covered": 13,
         "skipped": 0,
         "pct": 100
       },
       "statements": {
-        "total": 69,
-        "covered": 67,
+        "total": 64,
+        "covered": 62,
         "skipped": 0,
-        "pct": 97.1
+        "pct": 96.87
       },
       "branches": {
-        "total": 40,
-        "covered": 36,
+        "total": 38,
+        "covered": 34,
         "skipped": 0,
-        "pct": 90
+        "pct": 89.47
       }
     },
     "src/index.ts": {

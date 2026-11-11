@@ -189,6 +189,11 @@ test('focus trap wraps, recovers escaped focus, uses latest close callback and r
   );
   const first = view.getByRole('button', { name: 'First' }),
     last = view.getByRole('button', { name: 'Last' });
+  // Do not rely on native Tab navigation: WebKit can skip button controls.
+  fireEvent.keyDown(first, { key: 'Tab' });
+  assert.equal(document.activeElement, last);
+  fireEvent.keyDown(last, { key: 'Tab', shiftKey: true });
+  assert.equal(document.activeElement, first);
   last.focus();
   fireEvent.keyDown(last, { key: 'Tab' });
   assert.equal(document.activeElement, first);
@@ -209,6 +214,32 @@ test('focus trap wraps, recovers escaped focus, uses latest close callback and r
   assert.equal(document.body.style.overflow, 'scroll');
   assert.notEqual(before.inert, true);
   before.remove();
+  rects.mockRestore();
+});
+test('dialog Tab handling respects child widgets and owned portals', async () => {
+  const rects = vi
+    .spyOn(HTMLElement.prototype, 'getClientRects')
+    .mockImplementation(() => [new window.DOMRect(0, 0, 10, 10)]);
+  const view = render(h(FocusHarness, { onClose() {} }));
+  await act(
+    () => new Promise((resolve) => window.requestAnimationFrame(resolve)),
+  );
+  const first = view.getByRole('button', { name: 'First' });
+  const handled = (event) => event.preventDefault();
+  first.addEventListener('keydown', handled);
+  fireEvent.keyDown(first, { key: 'Tab' });
+  assert.equal(document.activeElement, first);
+  first.removeEventListener('keydown', handled);
+  const portal = document.createElement('button');
+  portal.setAttribute(
+    'data-rcta-portal-owner',
+    view.getByTestId('panel').getAttribute('data-rcta-dialog-panel'),
+  );
+  document.body.append(portal);
+  portal.focus();
+  assert.equal(fireEvent.keyDown(portal, { key: 'Tab' }), true);
+  assert.equal(document.activeElement, portal);
+  portal.remove();
   rects.mockRestore();
 });
 test('empty panels retain focus on Tab and backdrop close can be disabled', async () => {

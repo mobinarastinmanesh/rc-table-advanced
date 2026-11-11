@@ -4,7 +4,13 @@ User-visible changes are recorded here. Version numbers follow semantic versioni
 
 ## [Unreleased]
 
-No changes recorded.
+### Fixed
+
+- Keep modal and drawer Tab navigation inside their controls in WebKit, including after calendar switching. Cycle focus explicitly rather than relying on native button tabbing, while respecting child widgets that handle Tab and dialog-owned portals.
+
+### Tests
+
+- Add regression coverage for intermediate forward/reverse Tab movement and child-widget/portal ownership. Verify the published RC in independent npm consumers and reproduce the WebKit issue before testing the local fix.
 
 ## [2.0.0-rc.0] — 2026-11-11
 

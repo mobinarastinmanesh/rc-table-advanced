@@ -59,7 +59,7 @@ export const useDialogA11y = ({
         return;
       }
 
-      if (event.key !== 'Tab') return;
+      if (event.key !== 'Tab' || event.defaultPrevented) return;
 
       const panel = panelRef.current;
       if (!panel) return;
@@ -78,27 +78,25 @@ export const useDialogA11y = ({
         return;
       }
 
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
       const active = document.activeElement;
       const inOwnedPortal =
         active instanceof HTMLElement &&
         active
           .closest('[data-rcta-portal-owner]')
           ?.getAttribute('data-rcta-portal-owner') === titleId;
-      if (!panel.contains(active) && !inOwnedPortal) {
-        event.preventDefault();
-        first.focus();
-        return;
-      }
-
-      if (event.shiftKey && active === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && active === last) {
-        event.preventDefault();
-        first.focus();
-      }
+      if (inOwnedPortal) return;
+      // WebKit may skip buttons during native Tab navigation. Cycle explicitly
+      // so intermediate controls cannot send focus to the browser chrome.
+      const index = focusable.findIndex((node) => node === active);
+      const next =
+        index < 0
+          ? event.shiftKey
+            ? focusable.length - 1
+            : 0
+          : (index + (event.shiftKey ? -1 : 1) + focusable.length) %
+            focusable.length;
+      event.preventDefault();
+      focusable[next].focus();
     };
 
     document.addEventListener('keydown', handleKeyDown);
